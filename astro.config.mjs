@@ -9,7 +9,13 @@ import path from "path";
 const BEJAMAS_ASTRO_FONTS = [
   {
     provider: fontProviders.google(),
-    name: "Inter",
+    name: "Geist Mono",
+    cssVariable: "--font-mono",
+    subsets: ["latin"],
+  },
+  {
+    provider: fontProviders.google(),
+    name: "Geist",
     cssVariable: "--font-sans",
     subsets: ["latin"],
   },
