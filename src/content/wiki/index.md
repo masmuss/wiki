@@ -19,8 +19,11 @@ Ini adalah tempat saya mengumpulkan potongan-potongan informasi, mendokumentasik
 - [[git-workflow]]: Strategi branching dan commit message.
 - [[linux-homelab-setup]]: Dasar konfigurasi server Linux.
 - [[rekomendasi-album]]: Album metal dengan produksi gila-gilaan.
+- [[renovasi-kamar]]: Rencana tata ulang kamar 2026.
+- [[catatan-filsafat]]: Catatan santai eksistensialisme dan absurdisme.
 
 ### 🗂️ Telusuri Berdasarkan Topik
 
 - `/koding` — Catatan seputar arsitektur software, DevOps, dan framework.
 - `/musik` — Eksplorasi produksi audio, review, dan rekomendasi.
+- `/personal` — Rencana fisik, catatan buku, dan refleksi diri.
