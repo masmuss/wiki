@@ -50,14 +50,20 @@ function tocIndent(depth: number): string {
   {
     tags.length > 0 && (
       <div>
-        <span class="mb-3 block text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        <a
+          href="/tags"
+          class="mb-3 block text-xs font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
+        >
           Tags
-        </span>
+        </a>
         <div class="flex flex-wrap gap-1.5">
           {tags.map((tag) => (
-            <span class="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+            <a
+              href={`/tag/${tag}`}
+              class="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+            >
               {tag}
-            </span>
+            </a>
           ))}
         </div>
       </div>
