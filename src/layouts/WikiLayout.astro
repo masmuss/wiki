@@ -61,11 +61,7 @@ const breadcrumbs = generateBreadcrumbs(Astro.url.pathname);
     </div>
 
     <!-- Mobile nav drawer -->
-    <div
-      id="mobile-nav"
-      class="fixed inset-0 z-50 md:hidden"
-      aria-hidden="true"
-    >
+    <div id="mobile-nav" class="fixed inset-0 z-50 md:hidden" inert>
       <div
         id="mobile-nav-backdrop"
         class="fixed inset-0 bg-black/30 backdrop-blur-sm"

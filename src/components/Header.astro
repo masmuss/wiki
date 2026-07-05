@@ -43,11 +43,15 @@ import ThemeToggle from "@/components/ThemeToggle.astro";
     const isOpen = html.getAttribute(NAV_ATTR) === "true";
     html.setAttribute(NAV_ATTR, isOpen ? "false" : "true");
     document.body.style.overflow = isOpen ? "" : "hidden";
+    const nav = document.getElementById("mobile-nav");
+    if (nav) nav.inert = !isOpen;
   }
 
   function closeNav() {
     document.documentElement.setAttribute(NAV_ATTR, "false");
     document.body.style.overflow = "";
+    const nav = document.getElementById("mobile-nav");
+    if (nav) nav.inert = true;
   }
 
   document.addEventListener("click", (e) => {
