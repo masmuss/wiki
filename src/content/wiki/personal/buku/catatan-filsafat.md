@@ -13,18 +13,20 @@ growthStage: "seedling"
 ### Poin Utama dari Yang Dibaca
 
 **Eksistensi mendahului esensi** (Sartre)
+
 - Manusia gak lahir dengan tujuan yang udah ditentuin.
 - Kita bebas milih, dan tanggung jawab ada di kita.
 - Kebebasan itu berat — makanya orang sering lari ke "bad faith" (pura-pura gak punya pilihan).
 
 **Absurdisme** (Camus)
+
 - Manusia mencari makna → alam semesta gak punya makna → **absurd**.
 - Camus gak nyaranin bunuh diri atau lari ke Tuhan.
-- Solusinya: *revolt* (terima absurditas dan jalan terus).
-- *"One must imagine Sisyphus happy."*
+- Solusinya: _revolt_ (terima absurditas dan jalan terus).
+- _"One must imagine Sisyphus happy."_
 
 ### Buku yang Mau Dibaca Selanjutnya
 
-- [ ] *Being and Nothingness* — Sartre (berat, butuh waktu)
-- [ ] *The Myth of Sisyphus* — Camus (udah setengah jalan)
-- [ ] *Existentialism is a Humanism* — Sartre (lumayan tipis, cocok buat pemula)
+- [ ] _Being and Nothingness_ — Sartre (berat, butuh waktu)
+- [ ] _The Myth of Sisyphus_ — Camus (udah setengah jalan)
+- [ ] _Existentialism is a Humanism_ — Sartre (lumayan tipis, cocok buat pemula)

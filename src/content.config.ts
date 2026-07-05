@@ -1,8 +1,12 @@
+import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection } from "astro:content";
 
 const wiki = defineCollection({
-  type: "content",
+  loader: glob({
+    pattern: "**/**/*.md",
+    base: "./src/content/wiki",
+  }),
   schema: z.object({
     title: z.string(),
     description: z

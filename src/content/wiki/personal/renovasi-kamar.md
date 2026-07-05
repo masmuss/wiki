@@ -26,11 +26,11 @@ growthStage: "seedling"
 
 ### Budget Estimasi
 
-| Item | Estimasi |
-|---|---|
-| Standing desk | 1.2jt |
-| Monitor arm | 350rb |
-| Power strip + cable management | 200rb |
-| LED strip | 150rb |
-| Rak gantung | 300rb |
-| **Total** | **~2.2jt** |
+| Item                           | Estimasi   |
+| ------------------------------ | ---------- |
+| Standing desk                  | 1.2jt      |
+| Monitor arm                    | 350rb      |
+| Power strip + cable management | 200rb      |
+| LED strip                      | 150rb      |
+| Rak gantung                    | 300rb      |
+| **Total**                      | **~2.2jt** |
