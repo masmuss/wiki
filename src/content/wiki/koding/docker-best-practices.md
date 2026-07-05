@@ -8,8 +8,6 @@ isPinned: false
 growthStage: "budding"
 ---
 
-## Docker Best Practices untuk Homelab
-
 Menjalankan Docker di homelab butuh pendekatan berbeda dibanding production skala besar. Prioritannya: keamanan cukup, sumber daya minimal, mudah diingat.
 
 ### 1. Container Security Sederhana
