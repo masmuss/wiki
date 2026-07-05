@@ -21,6 +21,12 @@ const BEJAMAS_ASTRO_FONTS = [
     cssVariable: "--font-sans",
     subsets: ["latin"],
   },
+  {
+    provider: fontProviders.google(),
+    name: "Spectral",
+    cssVariable: "--font-serif",
+    subsets: ["latin"],
+  },
 ];
 // bejamas:astro-fonts:end
 
