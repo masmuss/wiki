@@ -78,13 +78,18 @@
     }
 
     :not(pre) > code {
-      background-color: color-mix(in oklab, var(--color-muted) 60%, transparent);
+      background-color: color-mix(
+        in oklab,
+        var(--color-muted) 60%,
+        transparent
+      );
       color: var(--color-foreground);
       font-weight: 500;
       padding: 0.125rem 0.375rem;
       border-radius: 0.25rem;
       font-size: 0.8125em;
-      border: 1px solid color-mix(in oklab, var(--color-border) 50%, transparent);
+      border: 1px solid
+        color-mix(in oklab, var(--color-border) 50%, transparent);
     }
 
     pre {
@@ -113,7 +118,11 @@
     }
 
     thead {
-      background-color: color-mix(in oklab, var(--color-muted) 50%, transparent);
+      background-color: color-mix(
+        in oklab,
+        var(--color-muted) 50%,
+        transparent
+      );
     }
 
     th {
@@ -133,7 +142,11 @@
     }
 
     tbody tr:nth-child(even) {
-      background-color: color-mix(in oklab, var(--color-muted) 30%, transparent);
+      background-color: color-mix(
+        in oklab,
+        var(--color-muted) 30%,
+        transparent
+      );
     }
 
     ul,
