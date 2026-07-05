@@ -1,19 +1,39 @@
 ---
-import { Breadcrumb } from "@/components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import type { Breadcrumb as BreadcrumbType } from "@/lib/wiki/generate-breadcrumbs";
 
 interface Props {
   title: string;
+  breadcrumbs: BreadcrumbType[];
   growthStage: string;
   updatedAt: Date;
 }
 
-const { title, growthStage, updatedAt } = Astro.props;
+const { title, breadcrumbs, growthStage, updatedAt } = Astro.props;
 ---
 
 <header class="mb-10">
-  <Breadcrumb class="mb-4" />
+  <Breadcrumb class="mb-4">
+    <BreadcrumbList>
+      {
+        breadcrumbs.map((breadcrumb, index) => (
+          <>
+            <BreadcrumbItem>
+              {breadcrumb.label.replace(/-/g, " ")}
+            </BreadcrumbItem>
+            {index !== breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+          </>
+        ))
+      }
+    </BreadcrumbList>
+  </Breadcrumb>
   <h1 class="text-4xl font-bold tracking-tight mb-4">{title}</h1>
 
   <div class="flex items-center gap-3 mb-6">

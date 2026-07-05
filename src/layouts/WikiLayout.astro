@@ -3,6 +3,10 @@ import WikiHeader from "@/components/wiki/WikiHeader.astro";
 import WikiSidebarLeft from "@/components/wiki/WikiSidebarLeft.astro";
 import WikiSidebarRight from "@/components/wiki/WikiSidebarRight.astro";
 import BaseLayout from "./BaseLayout.astro";
+import {
+  generateBreadcrumbs,
+  type Breadcrumb,
+} from "@/lib/wiki/generate-breadcrumbs";
 
 interface Props {
   title: string;
@@ -12,6 +16,7 @@ interface Props {
 }
 
 const { title, description, growthStage, updatedAt } = Astro.props;
+const breadcrumbs = generateBreadcrumbs(Astro.url.pathname);
 ---
 
 <BaseLayout title={title} description={`${description} - Vekawiki`}>
@@ -24,7 +29,7 @@ const { title, description, growthStage, updatedAt } = Astro.props;
       </aside>
 
       <main class="min-w-0">
-        <WikiHeader {title} {growthStage} {updatedAt} />
+        <WikiHeader {title} {breadcrumbs} {growthStage} {updatedAt} />
 
         <article class="prose prose-stone dark:prose-invert max-w-none">
           <slot />
