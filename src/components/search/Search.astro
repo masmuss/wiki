@@ -37,6 +37,14 @@ import { Search, LoaderCircle } from "@lucide/astro";
         <p class="text-sm">Search articles, projects, and more...</p>
       </div>
 
+      <div data-search-dev class="hidden py-12 text-center">
+        <p class="text-sm text-muted-foreground">
+          Search index not available in dev mode.<br />
+          Run <code class="text-primary font-semibold">pnpm build</code> to enable
+          search.
+        </p>
+      </div>
+
       <div data-search-empty class="hidden py-12 text-center"></div>
 
       <div data-search-status class="hidden px-3 pt-3">
@@ -107,5 +115,5 @@ import { Search, LoaderCircle } from "@lucide/astro";
 <script>
   import { initSearch } from "@/lib/search/search-client";
   const dialog = document.getElementById("search-dialog");
-  if (dialog) initSearch(dialog);
+  if (dialog) initSearch(dialog, import.meta.env.PROD);
 </script>

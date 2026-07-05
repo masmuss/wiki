@@ -16,7 +16,7 @@ interface PagefindModule {
   search: (query: string) => Promise<{ results: PagefindSearchResult[] }>;
 }
 
-export function initSearch(dialogRoot: HTMLElement) {
+export function initSearch(dialogRoot: HTMLElement, isProd: boolean) {
   let isOpen = false;
   let query = "";
   let results: PagefindResultData[] = [];
@@ -38,6 +38,7 @@ export function initSearch(dialogRoot: HTMLElement) {
     count: content?.querySelector<HTMLSpanElement>("[data-search-count]"),
     empty: content?.querySelector<HTMLDivElement>("[data-search-empty]"),
     hint: content?.querySelector<HTMLDivElement>("[data-search-hint]"),
+    dev: content?.querySelector<HTMLDivElement>("[data-search-dev]"),
     spinner: content?.querySelector<HTMLDivElement>("[data-search-spinner]"),
     escBtn: content?.querySelector<HTMLButtonElement>("[data-search-esc]"),
   };
@@ -51,6 +52,9 @@ export function initSearch(dialogRoot: HTMLElement) {
   }
 
   function loadPagefind(): Promise<void> {
+    if (!isProd) {
+      return Promise.reject(new Error("Search index unavailable in dev mode"));
+    }
     if (initPromise) return initPromise;
     initPromise = (async () => {
       if ((window as any).pagefind) return;
@@ -143,6 +147,15 @@ export function initSearch(dialogRoot: HTMLElement) {
 
   function render() {
     el.spinner?.classList.toggle("hidden", !isSearching);
+
+    if (!isProd) {
+      el.hint?.classList.add("hidden");
+      el.dev?.classList.remove("hidden");
+      el.empty?.classList.add("hidden");
+      el.list?.classList.add("hidden");
+      el.status?.classList.add("hidden");
+      return;
+    }
 
     if (results.length > 0) {
       el.hint?.classList.add("hidden");
