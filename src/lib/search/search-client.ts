@@ -53,15 +53,9 @@ export function initSearch(dialogRoot: HTMLElement) {
   function loadPagefind(): Promise<void> {
     if (initPromise) return initPromise;
     initPromise = (async () => {
-      if ((window as any).pagefind) return;
-      await new Promise<void>((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = "/pagefind/pagefind.js";
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error("Failed to load Pagefind"));
-        document.head.appendChild(script);
-      });
-      pagefind = (window as any).pagefind as PagefindModule;
+      const pagefindPath = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
+      const pf = await import(/* @vite-ignore */ pagefindPath);
+      pagefind = pf as PagefindModule;
       await pagefind.init();
     })();
     return initPromise;
