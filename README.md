@@ -1,8 +1,8 @@
-# 🌲 Astro Garden
+# 🌲 Veka
 
 **The Minimalist Digital Garden & Wiki Starter for Astro.**
 
-Astro Garden is not a competitor to massive documentation frameworks. It is the antithesis. Built specifically for those who want a fast, organic place to take notes — a digital garden or personal wiki — free from rigid routing configuration.
+Veka is not a competitor to massive documentation frameworks. It is the antithesis. Built specifically for those who want a fast, organic place to take notes — a digital garden or personal wiki — free from rigid routing configuration.
 
 Drop your Markdown files into the folder, and let the system weave them together automatically.
 
@@ -12,7 +12,7 @@ Drop your Markdown files into the folder, and let the system weave them together
 
 ---
 
-## ⚡ Why Astro Garden?
+## ⚡ Why Veka?
 
 - **Zero-Config Routing:** No need to register navigation in a config file. Create folders as deep as you like (e.g. `src/content/wiki/koding/arsitektur/`), and URLs with sidebar navigation are generated automatically.
 - **Ultra-Fast Static Search:** Powered by [Pagefind](https://pagefind.app/). Search is indexed locally during the build process — no third-party services required.
@@ -79,6 +79,6 @@ Write your thoughts here using Markdown...
 
 ## 🌍 Deployment
 
-Astro Garden is configured as a Static Site Generator (SSG) by default. Deployment is seamless on platforms like Vercel, Netlify, or Cloudflare Pages.
+Veka is configured as a Static Site Generator (SSG) by default. Deployment is seamless on platforms like Vercel, Netlify, or Cloudflare Pages.
 Make sure your build command on the target platform is set to: `pnpm run build`
 This command will automatically run `astro build` and trigger the pagefind integration to build the search index.
