@@ -1,88 +1,100 @@
-# 🌲 Veka
+# 🌲 Veka Wiki
 
-**The Minimalist Digital Garden & Wiki Starter for Astro.**
+**Personal Development Standards & Knowledge Base — powered by the [Veka](https://github.com/masmuss/veka) template.**
 
-Veka is not a competitor to massive documentation frameworks. It is the antithesis. Built specifically for those who want a fast, organic place to take notes — a digital garden or personal wiki — free from rigid routing configuration.
-
-Drop your Markdown files into the folder, and let the system weave them together automatically.
+A curated wiki documenting software development standards, architecture decisions, stack-specific guidelines, and tooling configurations used across personal projects. Built with Astro for fast static rendering and zero-config routing.
 
 ![Astro](https://img.shields.io/badge/Astro-3.0+-FF7E33?style=flat-square&logo=astro&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
 ![Pagefind](https://img.shields.io/badge/Search-Pagefind-blue?style=flat-square)
 
-![Veka Dashboard Preview](./public/preview-home.png)
-![Note Preview](./public/preview-note.png)
-![Note Preview](./public/preview-note-2.png)
+---
+
+## ⚡ Why This Wiki?
+
+- **Centralized Standards:** Single source of truth for code conventions, architecture patterns, and stack-specific best practices.
+- **Zero-Config Routing:** Powered by [Veka](https://github.com/masmuss/veka) — create nested folders (`src/content/wiki/stacks/golang/`) and navigation auto-generates.
+- **Ultra-Fast Static Search:** Pagefind indexes content during build — no third-party search service required.
+- **Growth Tracking:** Notes tagged with `growthStage` (`seedling` → `budding` → `evergreen`) to track maturity.
 
 ---
 
-## ⚡ Why Veka?
-
-- **Zero-Config Routing:** No need to register navigation in a config file. Create folders as deep as you like (e.g. `src/content/wiki/koding/arsitektur/`), and URLs with sidebar navigation are generated automatically.
-- **Ultra-Fast Static Search:** Powered by [Pagefind](https://pagefind.app/). Search is indexed locally during the build process — no third-party services required.
-- **Zod Schema Validation:** Frontmatter is strictly validated. No more build errors from a missing title or incorrectly formatted date.
-- **"Digital Garden" Concept:** Comes with a `growthStage` property (`seedling`, `budding`, `evergreen`) to track the maturity level of each note.
-- **100% Lighthouse Score:** The UI is built selectively using minimal components and vanilla JS for interactivity, ensuring zero runtime bloat.
-
----
-
-## 🚀 Quick Start (Under 1 Minute)
-
-Run these commands in your terminal to clone the template and start a local server:
+## 🚀 Quick Start
 
 ```bash
-# 1. Clone this repository (or use degit)
-pnpm dlx degit masmuss/veka my-wiki
+# 1. Clone
+pnpm dlx degit khoirul/veka my-wiki
 
-# 2. Enter the directory
-cd my-wiki
+# 2. Install
+cd my-wiki && pnpm install
 
-# 3. Install dependencies
-pnpm install
-
-# 4. Start the local server
+# 3. Dev server
 pnpm run dev
+
+# 4. Build (required for Pagefind search)
+pnpm run build && pnpm run preview
 ```
 
-Important Note for Search Features: Pagefind search works by reading the static build output. To test search locally, you must run npm run build followed by npm run preview.
-
-## 📝 How to Write Notes
-
-All your notes live in the `src/content/wiki/` directory. Feel free to create new sub-directories. Every `.md` or `.mdx` file must include the following frontmatter:
-
-```plaintext
----
-title: "Your Note Title"
-description: "Brief description for SEO and search snippets."
-createdAt: 2026-07-05
-updatedAt: 2026-07-05
-tags: ["concept", "idea"]
-isPinned: false
-growthStage: "seedling" # Options: seedling | budding | evergreen
 ---
 
-Write your thoughts here using Markdown...
+## 📚 Wiki Structure
+
 ```
+src/content/wiki/
+├── getting-started/          # Local env setup, tooling config
+├── standards/                # Naming, project structure, API design
+├── git/                      # Branching, workflow, collaboration
+├── architecture/             # Clean architecture, DI, database, caching
+├── stacks/                   # Per-tech guidelines
+│   ├── golang/
+│   ├── laravel/
+│   ├── svelte/
+│   ├── react-next/
+│   ├── astro/
+│   ├── bun-hono/
+│   ├── flutter/
+│   └── nestjs/
+├── guides/                   # Testing, deployment, CI/CD, design system
+└── notes/                    # Performance, security, troubleshooting
+```
+
+---
 
 ## 🏗️ Project Structure
 
-```plaintext
+```
 ├── src/
 │   ├── content/
-│   │   ├── config.ts       # Zod schema validation
-│   │   └── wiki/           # Your markdown files and folders
+│   │   ├── config.ts         # Zod schema validation
+│   │   └── wiki/             # Markdown content
 │   ├── layouts/
-│   │   ├── BaseLayout.astro # Pure HTML shell (SEO & Meta)
-│   │   └── WikiLayout.astro # 3-Column Grid (Nav, Content, TOC)
+│   │   ├── BaseLayout.astro  # SEO & Meta shell
+│   │   └── WikiLayout.astro  # 3-Column grid (Nav, Content, TOC)
 │   └── pages/
-│       ├── index.astro      # Dashboard / Home
+│       ├── index.astro       # Dashboard / Home
 │       └── wiki/
 │           └── [...slug].astro # Dynamic routing engine
-└── tailwind.config.mjs
+├── lefthook.yml              # Git hooks (lint, format, commitlint)
+├── commitlint.config.mjs     # Conventional commits
+└── .prettierrc               # Code formatting
 ```
+
+---
 
 ## 🌍 Deployment
 
-Veka is configured as a Static Site Generator (SSG) by default. Deployment is seamless on platforms like Vercel, Netlify, or Cloudflare Pages.
-Make sure your build command on the target platform is set to: `pnpm run build`
-This command will automatically run `astro build` and trigger the pagefind integration to build the search index.
+Static site, deployable to Vercel, Netlify, or Cloudflare Pages.
+
+Build command: `pnpm run build`
+
+---
+
+## 🙏 Acknowledgements
+
+This project is built on top of **[Veka](https://github.com/masmuss/veka)** — a minimalist digital garden & wiki starter for Astro by [Masmuss](https://github.com/masmuss).
+
+---
+
+## License
+
+MIT
