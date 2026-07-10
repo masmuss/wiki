@@ -37,5 +37,5 @@ export async function getCategorizedNotes(): Promise<CategorizedNote[]> {
         (a, b) => b.updatedAt.valueOf() - a.updatedAt.valueOf(),
       ),
     }))
-    .sort((a, b) => b.notes.length - a.notes.length);
+    .sort((a, b) => a.name.localeCompare(b.name));
 }

@@ -88,7 +88,7 @@ function flattenTree(notes: typeof allNotes): FlatItem[] {
   }
 
   const sortedRootKeys = Object.keys(root).sort((a, b) => {
-    return countNodes(root[b]) - countNodes(root[a]);
+    return root[a].label.localeCompare(root[b].label);
   });
 
   for (const key of sortedRootKeys) {
