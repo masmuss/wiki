@@ -19,6 +19,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@astrojs/mdx": "^7.0.2",
     "@data-slot/dialog": "^0.2.166",
     "@lucide/astro": "^1.23.0",
     "@tailwindcss/typography": "^0.5.20",
@@ -28,6 +29,7 @@
     "bejamas": "^0.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "node-html-parser": "^9.0.0",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.2"
   },
