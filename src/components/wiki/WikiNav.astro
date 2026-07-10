@@ -5,6 +5,7 @@ interface FlatItem {
   label: string;
   href: string;
   depth: number;
+  isFolder: boolean;
 }
 
 const allNotes = (await getCollection("wiki")).filter(
@@ -20,40 +21,85 @@ function humanize(slug: string): string {
     .join(" ");
 }
 
+function getIndentClass(depth: number) {
+  if (depth === 1) return "ml-3";
+  if (depth === 2) return "ml-6";
+  if (depth === 3) return "ml-9";
+  if (depth === 4) return "ml-12";
+  return "";
+}
+
 function flattenTree(notes: typeof allNotes): FlatItem[] {
-  const groups: Record<string, FlatItem[]> = {};
+  type TreeNode = {
+    label: string;
+    href?: string;
+    children: Record<string, TreeNode>;
+  };
+
+  const root: Record<string, TreeNode> = {};
 
   for (const note of notes) {
     const segments = note.id.split("/");
-    const category = segments[0];
+    let currentLevel = root;
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      const isFile = i === segments.length - 1;
 
-    if (!groups[category]) groups[category] = [];
-
-    if (segments.length === 1) {
-      groups[category].push({
-        label: note.data.title,
-        href: `/wiki/${note.id}`,
-        depth: 1,
-      });
-    } else {
-      const subPath = segments.slice(1, -1).map(humanize).join(" / ");
-      const label = subPath
-        ? `${subPath} / ${note.data.title}`
-        : note.data.title;
-      groups[category].push({
-        label,
-        href: `/wiki/${note.id}`,
-        depth: segments.length,
-      });
+      if (!currentLevel[segment]) {
+        currentLevel[segment] = {
+          label: isFile ? note.data.title : humanize(segment),
+          href: isFile ? `/wiki/${note.id}` : undefined,
+          children: {},
+        };
+      } else if (isFile) {
+        currentLevel[segment].href = `/wiki/${note.id}`;
+        currentLevel[segment].label = note.data.title;
+      }
+      currentLevel = currentLevel[segment].children;
     }
   }
 
-  return Object.entries(groups)
-    .sort(([, a], [, b]) => b.length - a.length)
-    .flatMap(([category, items]) => [
-      { label: humanize(category), href: "", depth: 0 },
-      ...items.sort((a, b) => a.label.localeCompare(b.label)),
-    ]);
+  function countNodes(node: TreeNode): number {
+    let count = Object.keys(node.children).length;
+    for (const k in node.children) count += countNodes(node.children[k]);
+    return count;
+  }
+
+  const flatItems: FlatItem[] = [];
+
+  function traverse(nodes: Record<string, TreeNode>, depth: number) {
+    const sortedKeys = Object.keys(nodes).sort((a, b) =>
+      nodes[a].label.localeCompare(nodes[b].label),
+    );
+
+    for (const key of sortedKeys) {
+      const node = nodes[key];
+      flatItems.push({
+        label: node.label,
+        href: node.href || "",
+        depth: depth,
+        isFolder: !node.href && Object.keys(node.children).length > 0,
+      });
+      traverse(node.children, depth + 1);
+    }
+  }
+
+  const sortedRootKeys = Object.keys(root).sort((a, b) => {
+    return countNodes(root[b]) - countNodes(root[a]);
+  });
+
+  for (const key of sortedRootKeys) {
+    const node = root[key];
+    flatItems.push({
+      label: node.label,
+      href: node.href || "",
+      depth: 0,
+      isFolder: !node.href && Object.keys(node.children).length > 0,
+    });
+    traverse(node.children, 1);
+  }
+
+  return flatItems;
 }
 
 const items = flattenTree(allNotes);
@@ -62,13 +108,27 @@ const items = flattenTree(allNotes);
 <nav class="space-y-0.5">
   {
     items.map((item) => {
-      const isCategory = item.depth === 0;
+      const isRootCategory = item.depth === 0;
+      const isSubCategory = item.isFolder && item.depth > 0;
       const isActive =
         item.href && currentPath === item.href.replace(/\/$/, "");
 
-      if (isCategory) {
+      if (isRootCategory) {
         return (
           <span class="block pb-1 pt-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground first:pt-0">
+            {item.label}
+          </span>
+        );
+      }
+
+      if (isSubCategory) {
+        return (
+          <span
+            class:list={[
+              "block text-xs font-medium text-muted-foreground pt-2 pb-1",
+              getIndentClass(item.depth),
+            ]}
+          >
             {item.label}
           </span>
         );
@@ -79,7 +139,7 @@ const items = flattenTree(allNotes);
           href={item.href}
           class:list={[
             "block text-sm leading-snug transition-colors rounded py-px",
-            item.depth > 1 ? "ml-3" : "",
+            getIndentClass(item.depth),
             isActive
               ? "font-medium text-primary"
               : "text-muted-foreground hover:text-foreground",
