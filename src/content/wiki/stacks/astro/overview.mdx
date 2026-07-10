@@ -12,35 +12,39 @@ growthStage: "evergreen"
 
 Untuk dokumentasi lengkap, kunjungi [Astro Documentation](https://docs.astro.build/).
 
+import FileTree from "@/components/wiki/FileTree.astro";
+
 ## Project Layout
 
-```
-project/
-├── src/
-│   ├── assets/             # Static assets (images, fonts, styles etc.)
-│   │   ├── styles/         # Global CSS
-│   │   │   ├── global.css  # Global CSS
-│   │   │   ├── tokens.css  # Tokens CSS
-│   │   ├── images/         # Images
-│   │   └── fonts/          # Fonts
-│   ├── features/           # Feature components
-│   │   ├── home/           # Home page components
-│   │   │   ├── components/ # Home page components
-│   │   │   ├── views/      # Home page components
-│   │   │   └── types.ts    # Home page types
-│   ├── components/         # UI components (.astro / .tsx / .svelte)
-│   │   ├── shell/          # Shell components
-│   │   ├── layout/         # Layout components
-│   │   └── shared/         # Shared components
-│   ├── layouts/            # Page layouts
-│   ├── pages/              # Routing
-│   ├── content/            # Content collections
-│   ├── lib/                # Utils
-│   └── content.config.ts   # Content collections configuration
-├── public/                 # Static assets
-├── astro.config.mjs
-└── package.json
-```
+<FileTree>
+
+- project/
+  - src/
+    - assets/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Static assets</span>
+      - styles/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Global CSS</span>
+        - global.css
+        - tokens.css
+      - images/
+      - fonts/
+    - features/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Feature components</span>
+      - home/
+        - components/
+        - views/
+        - types.ts
+    - components/ <span class="text-muted-foreground ml-2 text-xs font-sans"># UI components (.astro / .tsx)</span>
+      - shell/
+      - layout/
+      - shared/
+    - layouts/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Page layouts</span>
+    - pages/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Routing</span>
+    - content/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Content collections</span>
+    - lib/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Utils</span>
+    - content.config.ts
+  - public/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Static assets</span>
+  - astro.config.mjs
+  - package.json
+
+</FileTree>
 
 ## Island Architecture
 

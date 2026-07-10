@@ -8,21 +8,25 @@ isPinned: false
 growthStage: "seedling"
 ---
 
+import FileTree from "@/components/wiki/FileTree.astro";
+
 ## Architecture
 
 Gunakan **Clean Architecture** dengan BLoC (Business Logic Component) untuk state management.
 
-```
-lib/
-├── core/                 # Shared utilities, theme, constants
-├── features/
-│   └── auth/
-│       ├── data/         # Repositories, models, datasources
-│       ├── domain/       # Entities, use cases
-│       └── presentation/ # BLoC, screens, widgets
-├── main.dart
-└── injection.dart        # GetIt DI setup
-```
+<FileTree>
+
+- lib/
+  - core/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared utilities, theme, constants</span>
+  - features/
+    - auth/
+      - data/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Repositories, models, datasources</span>
+      - domain/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Entities, use cases</span>
+      - presentation/ <span class="text-muted-foreground ml-2 text-xs font-sans"># BLoC, screens, widgets</span>
+  - main.dart
+  - injection.dart <span class="text-muted-foreground ml-2 text-xs font-sans"># GetIt DI setup</span>
+
+</FileTree>
 
 ## State Management
 
