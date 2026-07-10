@@ -8,15 +8,19 @@ isPinned: true
 growthStage: "evergreen"
 ---
 
+import FileTree from "@/components/wiki/FileTree.astro";
+
 ## Branch Hierarchy
 
-```
-main (production)
-  └── dev (integration)
-       ├── feat/xxx
-       ├── fix/xxx
-       └── chore/xxx
-```
+<FileTree>
+
+- main (production)
+  - dev (integration)
+    - feat/xxx
+    - fix/xxx
+    - chore/xxx
+
+</FileTree>
 
 | Branch       | Base   | Purpose                       |
 | ------------ | ------ | ----------------------------- |

@@ -8,34 +8,38 @@ isPinned: false
 growthStage: "evergreen"
 ---
 
+import FileTree from "@/components/wiki/FileTree.astro";
+
 ## Project Layout
 
 Laravel 11+ slim structure:
 
-```
-project/
-├── app/
-│   ├── Domain/          # Entity, repository interface
-│   ├── Application/     # Service, DTO
-│   └── Infrastructure/  # Eloquent repo, Controller, Filament
-├── bootstrap/
-├── config/
-├── database/
-│   ├── factories/
-│   ├── migrations/
-│   └── seeders/
-├── resources/
-│   └── views/
-├── routes/
-│   ├── web.php
-│   └── api.php
-├── storage/
-├── tests/
-│   ├── Feature/
-│   └── Unit/
-├── composer.json
-└── .env.example
-```
+<FileTree>
+
+- project/
+  - app/
+    - Domain/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Entity, repository interface</span>
+    - Application/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Service, DTO</span>
+    - Infrastructure/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Eloquent repo, Controller, Filament</span>
+  - bootstrap/
+  - config/
+  - database/
+    - factories/
+    - migrations/
+    - seeders/
+  - resources/
+    - views/
+  - routes/
+    - web.php
+    - api.php
+  - storage/
+  - tests/
+    - Feature/
+    - Unit/
+  - composer.json
+  - .env.example
+
+</FileTree>
 
 ## Repository Pattern
 

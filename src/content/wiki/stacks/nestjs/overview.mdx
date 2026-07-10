@@ -8,28 +8,32 @@ isPinned: false
 growthStage: "seedling"
 ---
 
+import FileTree from "@/components/wiki/FileTree.astro";
+
 ## Project Layout
 
-```
-project/
-├── src/
-│   ├── main.ts               # Entry point
-│   ├── app.module.ts         # Root module
-│   ├── modules/
-│   │   └── users/
-│   │       ├── users.module.ts
-│   │       ├── users.controller.ts
-│   │       ├── users.service.ts
-│   │       ├── users.repository.ts
-│   │       └── dto/
-│   │           ├── create-user.dto.ts
-│   │           └── update-user.dto.ts
-│   ├── common/               # Filters, interceptors, pipes, guards
-│   └── config/               # App config
-├── test/
-├── package.json
-└── nest-cli.json
-```
+<FileTree>
+
+- project/
+  - src/
+    - main.ts <span class="text-muted-foreground ml-2 text-xs font-sans"># Entry point</span>
+    - app.module.ts <span class="text-muted-foreground ml-2 text-xs font-sans"># Root module</span>
+    - modules/
+      - users/
+        - users.module.ts
+        - users.controller.ts
+        - users.service.ts
+        - users.repository.ts
+        - dto/
+          - create-user.dto.ts
+          - update-user.dto.ts
+    - common/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Filters, interceptors, pipes, guards</span>
+    - config/ <span class="text-muted-foreground ml-2 text-xs font-sans"># App config</span>
+  - test/
+  - package.json
+  - nest-cli.json
+
+</FileTree>
 
 ## Module Pattern
 

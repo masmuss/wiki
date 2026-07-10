@@ -1,0 +1,53 @@
+---
+title: "Project Structure Standards"
+description: "Standarisasi struktur direktori untuk berbagai jenis project."
+createdAt: 2026-07-09
+updatedAt: 2026-07-09
+tags: ["standards", "structure"]
+isPinned: false
+growthStage: "evergreen"
+---
+
+import FileTree from "@/components/wiki/FileTree.astro";
+
+## Root File Conventions
+
+Semua project Wajib memiliki:
+
+<FileTree>
+
+- .gitignore
+- README.md
+- LICENSE (opsional)
+- Makefile (atau just-task, taskfile)
+
+</FileTree>
+
+## Monorepo Structure
+
+Untuk project yang terdiri dari multiple packages:
+
+<FileTree>
+
+- apps/
+  - web/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Frontend (Astro/Next/SvelteKit)</span>
+  - api/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Backend (Go/Laravel/NestJS/Hono)</span>
+- packages/
+  - shared/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared types, utils</span>
+  - ui/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared UI components</span>
+- tooling/ <span class="text-muted-foreground ml-2 text-xs font-sans"># ESLint, Prettier, TS configs</span>
+- pnpm-workspace.yaml
+- package.json
+
+</FileTree>
+
+## README Wajib Berisi
+
+1. **Judul** dan deskripsi singkat
+2. **Prerequisites** (runtime, tools)
+3. **Cara install** (`pnpm install`, `go mod download`, dll)
+4. **Cara jalanin** (`pnpm dev`, `go run .`, dll)
+5. **Testing** (`pnpm test`, `go test ./...`, dll)
+6. **Environment variables** (copy `.env.example`)
+7. **Database setup** jika ada
+8. **Deployment** (jika relevant)

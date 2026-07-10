@@ -8,23 +8,27 @@ isPinned: false
 growthStage: "evergreen"
 ---
 
+import FileTree from "@/components/wiki/FileTree.astro";
+
 ## Project Layout
 
-```
-project/
-├── src/
-│   ├── lib/
-│   │   ├── components/   # Reusable UI
-│   │   ├── stores/       # State management
-│   │   └── utils/        # Helpers
-│   ├── routes/           # SvelteKit routing
-│   ├── app.html
-│   └── app.css
-├── static/
-├── tests/
-├── package.json
-└── vite.config.ts
-```
+<FileTree>
+
+- project/
+  - src/
+    - lib/
+      - components/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Reusable UI</span>
+      - stores/ <span class="text-muted-foreground ml-2 text-xs font-sans"># State management</span>
+      - utils/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Helpers</span>
+    - routes/ <span class="text-muted-foreground ml-2 text-xs font-sans"># SvelteKit routing</span>
+    - app.html
+    - app.css
+  - static/
+  - tests/
+  - package.json
+  - vite.config.ts
+
+</FileTree>
 
 ## Svelte 5 Runes
 

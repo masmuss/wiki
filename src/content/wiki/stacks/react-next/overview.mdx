@@ -8,21 +8,25 @@ isPinned: false
 growthStage: "evergreen"
 ---
 
+import FileTree from "@/components/wiki/FileTree.astro";
+
 ## Project Layout
 
-```
-project/
-├── src/
-│   ├── app/              # Next.js App Router
-│   ├── components/       # Reusable components
-│   ├── lib/              # Utils, hooks
-│   ├── hooks/            # Custom hooks
-│   └── types/            # TypeScript types
-├── public/
-├── tests/
-├── next.config.js
-└── package.json
-```
+<FileTree>
+
+- project/
+  - src/
+    - app/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Next.js App Router</span>
+    - components/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Reusable components</span>
+    - lib/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Utils, hooks</span>
+    - hooks/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Custom hooks</span>
+    - types/ <span class="text-muted-foreground ml-2 text-xs font-sans"># TypeScript types</span>
+  - public/
+  - tests/
+  - next.config.js
+  - package.json
+
+</FileTree>
 
 ## App Router
 
@@ -122,19 +126,21 @@ pnpm playwright test
 
 App Router structure:
 
-```
-app/
-├── (auth)/             # Route group
-│   ├── login/
-│   └── register/
-├── dashboard/
-│   ├── layout.tsx
-│   └── page.tsx
-├── api/
-│   └── users/
-│       └── route.ts    # API route
-└── layout.tsx
-```
+<FileTree>
+
+- app/
+  - (auth)/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Route group</span>
+    - login/
+    - register/
+  - dashboard/
+    - layout.tsx
+    - page.tsx
+  - api/
+    - users/
+      - route.ts <span class="text-muted-foreground ml-2 text-xs font-sans"># API route</span>
+  - layout.tsx
+
+</FileTree>
 
 ## Route Handlers (API Routes)
 

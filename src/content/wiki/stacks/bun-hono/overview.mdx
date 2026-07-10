@@ -8,24 +8,28 @@ isPinned: false
 growthStage: "evergreen"
 ---
 
+import FileTree from "@/components/wiki/FileTree.astro";
+
 ## Project Layout
 
-```
-project/
-├── src/
-│   ├── index.ts          # Entry point
-│   ├── routes/           # Route handlers
-│   ├── middleware/       # Hono middleware
-│   ├── db/               # Drizzle / raw SQL
-│   ├── types/            # TypeScript types
-│   └── utils/            # Helpers
-├── tests/
-├── drizzle/              # Migrations
-├── docker/
-├── package.json
-├── bun.lockb
-└── tsconfig.json
-```
+<FileTree>
+
+- project/
+  - src/
+    - index.ts <span class="text-muted-foreground ml-2 text-xs font-sans"># Entry point</span>
+    - routes/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Route handlers</span>
+    - middleware/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Hono middleware</span>
+    - db/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Drizzle / raw SQL</span>
+    - types/ <span class="text-muted-foreground ml-2 text-xs font-sans"># TypeScript types</span>
+    - utils/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Helpers</span>
+  - tests/
+  - drizzle/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Migrations</span>
+  - docker/
+  - package.json
+  - bun.lockb
+  - tsconfig.json
+
+</FileTree>
 
 ## Hono Router
 

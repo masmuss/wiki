@@ -8,25 +8,29 @@ isPinned: false
 growthStage: "evergreen"
 ---
 
+import FileTree from "@/components/wiki/FileTree.astro";
+
 ## Project Layout
 
-```
-project/
-├── cmd/                  # Entry point per binary
-│   └── server/
-│       └── main.go
-├── internal/             # Private code
-│   ├── domain/           # Entity, use case interface
-│   ├── application/      # Service, DTO
-│   ├── infrastructure/   # Handler, repo, middleware
-│   └── config/           # Config loader
-├── pkg/                  # Shared, reusable code
-├── migrations/           # DB migrations (atlas, goose)
-├── tests/                # Integration tests
-├── Makefile
-├── go.mod
-└── go.sum
-```
+<FileTree>
+
+- project/
+  - cmd/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Entry point per binary</span>
+    - server/
+      - main.go
+  - internal/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Private code</span>
+    - domain/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Entity, use case interface</span>
+    - application/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Service, DTO</span>
+    - infrastructure/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Handler, repo, middleware</span>
+    - config/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Config loader</span>
+  - pkg/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared, reusable code</span>
+  - migrations/ <span class="text-muted-foreground ml-2 text-xs font-sans"># DB migrations (atlas, goose)</span>
+  - tests/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Integration tests</span>
+  - Makefile
+  - go.mod
+  - go.sum
+
+</FileTree>
 
 ## Dependency Injection
 
