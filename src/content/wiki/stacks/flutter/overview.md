@@ -95,3 +95,73 @@ dart analyze
 analyzer:
     # Konfigurasi rule linter (contoh: exclude files, dll)
 ```
+
+## API Integration (Networking)
+
+Gunakan **Dio** dipadukan dengan **Retrofit** untuk type-safe HTTP client:
+
+```dart
+@RestApi(baseUrl: "https://api.example.com")
+abstract class ApiClient {
+  factory ApiClient(Dio dio, {String baseUrl}) = _ApiClient;
+
+  @GET("/users")
+  Future<List<User>> getUsers();
+}
+```
+
+## Local Storage
+
+- **SharedPreferences**: Untuk simple key-value pairs (auth token, theme).
+- **Hive** atau **Isar**: Untuk local database / caching complex objects.
+- **Flutter Secure Storage**: Wajib untuk data sensitif (tokens, passwords).
+
+## Code Generation
+
+Gunakan **build_runner** dengan `freezed` dan `json_serializable` untuk immutable models:
+
+```dart
+@freezed
+class User with _$User {
+  const factory User({
+    required String id,
+    required String email,
+  }) = _User;
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+}
+```
+
+_Run codegen:_ `dart run build_runner build --delete-conflicting-outputs`
+
+## Build Flavors (Environments)
+
+Gunakan _flavors_ (Android) dan _schemes_ (iOS) untuk memisahkan config Dev, Staging, dan Prod:
+
+```bash
+# Run dengan flavor tertentu
+flutter run --flavor dev -t lib/main_dev.dart
+flutter run --flavor prod -t lib/main_prod.dart
+```
+
+## CI/CD Pipeline
+
+Contoh pipeline dasar menggunakan GitHub Actions:
+
+```yaml
+name: Flutter CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: flutter analyze
+      - run: flutter test
+```

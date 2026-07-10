@@ -135,3 +135,83 @@ app/
 │       └── route.ts    # API route
 └── layout.tsx
 ```
+
+## Route Handlers (API Routes)
+
+Gunakan App Router untuk membuat API Endpoint:
+
+```ts
+// app/api/users/route.ts
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  const users = await db.user.findMany();
+  return NextResponse.json({ success: true, data: users });
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const user = await db.user.create({ data: body });
+  return NextResponse.json({ success: true, data: user }, { status: 201 });
+}
+```
+
+## Server Actions
+
+Gunakan Server Actions untuk mutasi data langsung dari komponen React:
+
+```tsx
+// app/actions.ts
+"use server";
+
+import { revalidatePath } from "next/cache";
+
+export async function updateUser(formData: FormData) {
+  const name = formData.get("name");
+  await db.user.update({ data: { name } });
+  revalidatePath("/users");
+}
+
+// Komponen
+import { updateUser } from "./actions";
+
+export function EditForm() {
+  return (
+    <form action={updateUser}>
+      <input name="name" />
+      <button type="submit">Update</button>
+    </form>
+  );
+}
+```
+
+## Middleware
+
+Gunakan middleware untuk proteksi route (Auth/Redirects) secara global:
+
+```ts
+// middleware.ts di root project
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get("token");
+
+  if (!token && request.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/dashboard/:path*"],
+};
+```
+
+## Authentication
+
+Rekomendasi implementasi Auth di Next.js:
+
+- **NextAuth.js (Auth.js)**: Untuk setup standar dengan OAuth (Google, GitHub) atau Credentials.
+- **Better Auth**: Untuk solusi auth yang lebih modern, cepat, dan type-safe.
+- **Clerk / Supabase Auth**: Untuk solusi managed (SaaS) tanpa pusing manage session.

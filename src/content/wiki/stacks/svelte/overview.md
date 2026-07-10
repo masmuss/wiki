@@ -116,3 +116,76 @@ export const load = async ({ fetch }) => {
   return { users: await res.json() };
 };
 ```
+
+## Form Actions
+
+SvelteKit menggunakan Form Actions untuk mutasi data tanpa JS (Progressive Enhancement):
+
+```svelte
+<!-- +page.svelte -->
+<form method="POST" action="?/login">
+    <input name="email" type="email" />
+    <input name="password" type="password" />
+    <button type="submit">Login</button>
+</form>
+```
+
+```ts
+// +page.server.ts
+export const actions = {
+  login: async ({ request }) => {
+    const data = await request.formData();
+    const email = data.get("email");
+    // validasi dan auth
+    return { success: true };
+  },
+};
+```
+
+## Environment Variables
+
+SvelteKit memisahkan env vars menjadi statis/dinamis dan public/private:
+
+```ts
+// Private (Hanya bisa diakses di server)
+import { DATABASE_URL } from "$env/static/private";
+import { env } from "$env/dynamic/private";
+
+// Public (Bisa diakses di client & server)
+import { PUBLIC_API_URL } from "$env/static/public";
+import { env } from "$env/dynamic/public";
+```
+
+Selalu prioritaskan `$env/static` kecuali nilainya berubah saat runtime (misal: Docker deployment).
+
+## SSR & SSG (Rendering)
+
+SvelteKit me-render SSR secara default. Untuk mengubah konfigurasi per-halaman:
+
+```ts
+// +page.ts atau +layout.ts
+export const ssr = true; // false untuk SPA mode
+export const prerender = true; // true untuk SSG (Static Site Generation)
+export const csr = true; // false untuk disable client-side JS
+```
+
+## Deployment (Adapters)
+
+Gunakan _adapters_ untuk men-deploy aplikasi SvelteKit.
+Untuk Node.js / Docker (VPS):
+
+```bash
+pnpm add -D @sveltejs/adapter-node
+```
+
+Ubah di `svelte.config.js`:
+
+```js
+import adapter from "@sveltejs/adapter-node";
+
+export default {
+  kit: {
+    adapter: adapter(),
+  },
+};
+```
