@@ -8,9 +8,7 @@ interface FlatItem {
   isFolder: boolean;
 }
 
-const allNotes = (await getCollection("wiki")).filter(
-  (note) => note.id !== "index",
-);
+const allNotes = await getCollection("wiki");
 
 const currentPath = Astro.url.pathname.replace(/\/$/, "");
 
@@ -48,11 +46,16 @@ function flattenTree(notes: typeof allNotes): FlatItem[] {
       if (!currentLevel[segment]) {
         currentLevel[segment] = {
           label: isFile ? note.data.title : humanize(segment),
-          href: isFile ? `/wiki/${note.id}` : undefined,
+          href: isFile
+            ? note.id === "index"
+              ? "/wiki"
+              : `/wiki/${note.id}`
+            : undefined,
           children: {},
         };
       } else if (isFile) {
-        currentLevel[segment].href = `/wiki/${note.id}`;
+        currentLevel[segment].href =
+          note.id === "index" ? "/wiki" : `/wiki/${note.id}`;
         currentLevel[segment].label = note.data.title;
       }
       currentLevel = currentLevel[segment].children;
@@ -108,7 +111,7 @@ const items = flattenTree(allNotes);
 <nav class="space-y-0.5">
   {
     items.map((item) => {
-      const isRootCategory = item.depth === 0;
+      const isRootCategory = item.depth === 0 && item.isFolder;
       const isSubCategory = item.isFolder && item.depth > 0;
       const isActive =
         item.href && currentPath === item.href.replace(/\/$/, "");
