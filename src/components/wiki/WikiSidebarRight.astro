@@ -18,7 +18,9 @@ const tocHeadings = headings.filter((h) => h.depth > 1);
 
 function tocIndent(depth: number): string {
   if (depth <= 2) return "";
-  return "ml-3";
+  if (depth === 3) return "ml-3";
+  if (depth === 4) return "ml-6";
+  return "ml-9";
 }
 ---
 
