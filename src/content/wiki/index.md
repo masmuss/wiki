@@ -89,7 +89,8 @@ Panduan praktis lintas stack.
 | -------------------------------------- | ------------------------------------------ |
 | [[onboarding\|New Project Onboarding]] | Checklist setup project baru               |
 | [[testing\|Testing Standards]]         | Unit, integration, E2E untuk semua stack   |
-| [[deployment\|Deployment Guide]]       | Docker, VPS, Vercel, platform pilihan      |
+| [[deployment\|Deployment Guide]]       | VPS, platform pilihan, environment         |
+| [[docker\|Docker Deployment]]          | Multi-stage, PostgreSQL, Redis, Compose    |
 | [[ci-cd\|CI/CD Pipeline]]              | GitHub Actions workflows                   |
 | [[design-system\|Design System]]       | Tailwind, shadcn/ui, tokens, accessibility |
 
@@ -108,4 +109,4 @@ Referensi teknis dan troubleshooting.
 
 ---
 
-_Last updated: 2026-07-09_
+_Last updated: 2026-07-10_
