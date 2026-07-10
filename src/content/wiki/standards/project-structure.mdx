@@ -25,18 +25,19 @@ Semua project Wajib memiliki:
 
 ## Monorepo Structure
 
-Untuk project yang terdiri dari multiple packages:
+Untuk project berskala besar yang terdiri dari multiple packages (sebagai contoh, lihat repositori [masmuss/trak](https://github.com/masmuss/trak)):
 
 <FileTree>
 
 - apps/
-  - web/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Frontend (Astro/Next/SvelteKit)</span>
-  - api/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Backend (Go/Laravel/NestJS/Hono)</span>
+  - bot/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Telegram/Discord bot service</span>
+  - web/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Web frontend (Next.js/Astro)</span>
 - packages/
-  - shared/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared types, utils</span>
-  - ui/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared UI components</span>
-- tooling/ <span class="text-muted-foreground ml-2 text-xs font-sans"># ESLint, Prettier, TS configs</span>
-- pnpm-workspace.yaml
+  - database/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Drizzle schemas, migrations</span>
+  - services/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared business logic & services</span>
+  - shared/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared types, constants, utilities</span>
+- pnpm-workspace.yaml <span class="text-muted-foreground ml-2 text-xs font-sans"># Workspace config</span>
+- turbo.json <span class="text-muted-foreground ml-2 text-xs font-sans"># Turborepo config</span>
 - package.json
 
 </FileTree>
