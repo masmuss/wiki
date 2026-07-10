@@ -8,18 +8,36 @@ isPinned: false
 growthStage: "evergreen"
 ---
 
+## Astro Documentation
+
+Untuk dokumentasi lengkap, kunjungi [Astro Documentation](https://docs.astro.build/).
+
 ## Project Layout
 
 ```
 project/
 ├── src/
-│   ├── components/       # UI components (.astro / .tsx / .svelte)
-│   ├── layouts/          # Page layouts
-│   ├── pages/            # Routing
-│   ├── content/          # Content collections
-│   ├── styles/           # Global CSS
-│   └── lib/              # Utils
-├── public/               # Static assets
+│   ├── assets/             # Static assets (images, fonts, styles etc.)
+│   │   ├── styles/         # Global CSS
+│   │   │   ├── global.css  # Global CSS
+│   │   │   ├── tokens.css  # Tokens CSS
+│   │   ├── images/         # Images
+│   │   └── fonts/          # Fonts
+│   ├── features/           # Feature components
+│   │   ├── home/           # Home page components
+│   │   │   ├── components/ # Home page components
+│   │   │   ├── views/      # Home page components
+│   │   │   └── types.ts    # Home page types
+│   ├── components/         # UI components (.astro / .tsx / .svelte)
+│   │   ├── shell/          # Shell components
+│   │   ├── layout/         # Layout components
+│   │   └── shared/         # Shared components
+│   ├── layouts/            # Page layouts
+│   ├── pages/              # Routing
+│   ├── content/            # Content collections
+│   ├── lib/                # Utils
+│   └── content.config.ts   # Content collections configuration
+├── public/                 # Static assets
 ├── astro.config.mjs
 └── package.json
 ```
@@ -49,7 +67,7 @@ import BaseLayout from "../layouts/Base.astro";
 Gunakan content collections untuk blog, wiki, docs:
 
 ```ts
-// src/content/config.ts
+// src/content.config.ts
 import { defineCollection, z } from "astro:content";
 
 const blog = defineCollection({
@@ -84,7 +102,7 @@ const posts = await getCollection("blog");
 
 - File-based routing di `src/pages/`.
 - Dynamic routes: `[id].astro`, `[...slug].astro`.
-- API routes: `pages/api/hello.ts`.
+- API routes: `src/pages/api/*.ts` dengan `export GET`, `export POST`, dll.
 
 ## Styling
 
