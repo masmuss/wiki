@@ -123,6 +123,117 @@ describe("UsersController", () => {
 });
 ```
 
+## Configuration Management
+
+Gunakan `@nestjs/config` untuk mengatur environment variables dengan validasi:
+
+```ts
+import { ConfigModule } from "@nestjs/config";
+import * as Joi from "joi";
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        DATABASE_URL: Joi.string().required(),
+        PORT: Joi.number().default(3000),
+      }),
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+## Exception Filters
+
+Gunakan global exception filter untuk menstandarkan struktur error response:
+
+```ts
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+} from "@nestjs/common";
+import { Response } from "express";
+
+@Catch(HttpException)
+export class GlobalExceptionFilter implements ExceptionFilter {
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const status = exception.getStatus();
+    const exceptionResponse = exception.getResponse();
+
+    response.status(status).json({
+      success: false,
+      error:
+        typeof exceptionResponse === "string"
+          ? { message: exceptionResponse }
+          : exceptionResponse,
+    });
+  }
+}
+```
+
+_Daftarkan di `main.ts`: `app.useGlobalFilters(new GlobalExceptionFilter())`._
+
+## Interceptors
+
+Gunakan interceptor untuk mapping response menjadi format amplop (envelope) standard:
+
+```ts
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from "@nestjs/common";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+
+@Injectable()
+export class TransformInterceptor<T> implements NestInterceptor<T, any> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    return next.handle().pipe(
+      map((data) => ({
+        success: true,
+        data,
+      })),
+    );
+  }
+}
+```
+
+_Daftarkan di `main.ts`: `app.useGlobalInterceptors(new TransformInterceptor())`._
+
+## Guards (Auth & RBAC)
+
+Gunakan Guards untuk melindungi route:
+
+```ts
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from "@nestjs/common";
+
+@Injectable()
+export class AuthGuard implements CanActivate {
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const token = request.headers.authorization;
+    if (!token) throw new UnauthorizedException("Token required");
+    return true;
+  }
+}
+
+// Di Controller:
+// @UseGuards(AuthGuard)
+```
+
 ## Deployment
 
 Build dan run:
