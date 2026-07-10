@@ -168,7 +168,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.3"
       - run: composer install
       - run: cp .env.example .env
       - run: php artisan key:generate
@@ -204,7 +204,7 @@ jobs:
           script: |
             cd /opt/app
             git pull origin main
-            docker-compose up -d --build
+            docker compose up -d --build
 ```
 
 ### Deploy ke Vercel

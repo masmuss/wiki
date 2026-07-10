@@ -17,7 +17,7 @@ Editor utama. Konfigurasi di `~/.config/zed/settings.json`.
 | Setting        | Value                 |
 | -------------- | --------------------- |
 | Font           | Lilex Nerd Font 13    |
-| UI Font        | JetBrains Mono NL     |
+| UI Font        | Geist Mono            |
 | Line Length    | 120                   |
 | Soft Wrap      | preferred_line_length |
 | Format on Save | on                    |

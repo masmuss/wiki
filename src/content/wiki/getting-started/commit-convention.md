@@ -72,7 +72,7 @@ chore: setup lefthook and commitlint
 
 ## Aturan
 
-1. **Pakai bahasa Inggris** untuk konsistensi
+1. **Wajib pakai bahasa Inggris** untuk pesan commit, meskipun dokumen ini berbahasa Indonesia
 2. **Imperative mood**: "add" bukan "added"/"adds"
 3. **Deskripsi singkat** (maks 72 karakter)
 4. **Jangan titik** di akhir description

@@ -125,14 +125,16 @@ php artisan serve
 
 ```bash
 # New project
-pnpm create svelte@latest my-project
+npx sv create my-project
 
 # Setup
 cd my-project
 pnpm install
-pnpm add -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
+pnpm add -D tailwindcss @tailwindcss/vite
+```
 
-# Dev
 pnpm dev
+
+```
+
 ```

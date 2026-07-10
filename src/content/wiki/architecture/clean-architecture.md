@@ -19,7 +19,7 @@ growthStage: "evergreen"
 ### 1. Domain Layer (Core)
 
 - **Entity**: Domain model dan business rules.
-- **Repository Interface**: Definisin cara akses data, tanpa implementasi.
+- **Repository Interface**: Definisikan cara akses data, tanpa implementasi.
 - **Use Case**: Business logic murni, bebas framework.
 
 ### 2. Application Layer
@@ -40,7 +40,7 @@ growthStage: "evergreen"
 Infrastructure → Application → Domain
 ```
 
-Domain gak boleh tahu detail framework. Infrastructure bergantung ke Application dan Domain.
+Domain tidak boleh tahu detail framework. Infrastructure bergantung ke Application dan Domain.
 
 ## Struktur Go
 

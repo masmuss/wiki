@@ -135,11 +135,17 @@ node dist/main.js
 Atau dengan Docker:
 
 ```dockerfile
-FROM node:22-alpine
+FROM node:22-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+COPY package.json pnpm-lock.yaml ./
+RUN corepack prepare pnpm@latest --activate && pnpm install --frozen-lockfile
 COPY . .
-RUN npm run build
-CMD ["node", "dist/main"]
+RUN pnpm build
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+CMD ["node", "dist/main.js"]
 ```
