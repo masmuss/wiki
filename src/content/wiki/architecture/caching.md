@@ -129,7 +129,7 @@ const { data } = useQuery({
   queryKey: ["users"],
   queryFn: fetchUsers,
   staleTime: 5 * 60 * 1000, // 5 menit
-  cacheTime: 10 * 60 * 1000, // 10 menit
+  gcTime: 10 * 60 * 1000, // 10 menit
 });
 ```
 

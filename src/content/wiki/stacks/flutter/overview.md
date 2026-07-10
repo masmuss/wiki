@@ -93,7 +93,5 @@ dart analyze
 
 # Linter (di pubspec.yaml)
 analyzer:
-    enable-experiment:
-        - records
-        - patterns
+    # Konfigurasi rule linter (contoh: exclude files, dll)
 ```

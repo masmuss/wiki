@@ -79,7 +79,7 @@ Gunakan **Drizzle ORM** dengan PostgreSQL:
 ```ts
 import { drizzle } from "drizzle-orm/node-postgres";
 
-const db = drizzle({ connection: process.env.DATABASE_URL });
+const db = drizzle(process.env.DATABASE_URL!);
 ```
 
 ## Testing

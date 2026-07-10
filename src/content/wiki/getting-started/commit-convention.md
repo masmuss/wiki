@@ -44,7 +44,7 @@ Scope opsional, gunakan untuk konteks tambahan:
 ```
 feat(auth): add OAuth2 Google login
 fix(api): handle empty request body
-chore(deps): upgrade eslint to v10
+chore(deps): upgrade eslint to v9
 ```
 
 ## Contoh Baik
