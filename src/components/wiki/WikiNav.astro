@@ -1,15 +1,8 @@
 ---
 import { getCollection } from "astro:content";
-
-interface FlatItem {
-  label: string;
-  href: string;
-  depth: number;
-  isFolder: boolean;
-}
+import WikiNavNode, { type TreeNode } from "./WikiNavNode.astro";
 
 const allNotes = await getCollection("wiki");
-
 const currentPath = Astro.url.pathname.replace(/\/$/, "");
 
 function humanize(slug: string): string {
@@ -19,21 +12,7 @@ function humanize(slug: string): string {
     .join(" ");
 }
 
-function getIndentClass(depth: number) {
-  if (depth === 1) return "ml-3";
-  if (depth === 2) return "ml-6";
-  if (depth === 3) return "ml-9";
-  if (depth === 4) return "ml-12";
-  return "";
-}
-
-function flattenTree(notes: typeof allNotes): FlatItem[] {
-  type TreeNode = {
-    label: string;
-    href?: string;
-    children: Record<string, TreeNode>;
-  };
-
+function buildTree(notes: typeof allNotes): Record<string, TreeNode> {
   const root: Record<string, TreeNode> = {};
 
   for (const note of notes) {
@@ -62,96 +41,24 @@ function flattenTree(notes: typeof allNotes): FlatItem[] {
     }
   }
 
-  function countNodes(node: TreeNode): number {
-    let count = Object.keys(node.children).length;
-    for (const k in node.children) count += countNodes(node.children[k]);
-    return count;
-  }
-
-  const flatItems: FlatItem[] = [];
-
-  function traverse(nodes: Record<string, TreeNode>, depth: number) {
-    const sortedKeys = Object.keys(nodes).sort((a, b) =>
-      nodes[a].label.localeCompare(nodes[b].label),
-    );
-
-    for (const key of sortedKeys) {
-      const node = nodes[key];
-      flatItems.push({
-        label: node.label,
-        href: node.href || "",
-        depth: depth,
-        isFolder: !node.href && Object.keys(node.children).length > 0,
-      });
-      traverse(node.children, depth + 1);
-    }
-  }
-
-  const sortedRootKeys = Object.keys(root).sort((a, b) => {
-    return root[a].label.localeCompare(root[b].label);
-  });
-
-  for (const key of sortedRootKeys) {
-    const node = root[key];
-    flatItems.push({
-      label: node.label,
-      href: node.href || "",
-      depth: 0,
-      isFolder: !node.href && Object.keys(node.children).length > 0,
-    });
-    traverse(node.children, 1);
-  }
-
-  return flatItems;
+  return root;
 }
 
-const items = flattenTree(allNotes);
+const root = buildTree(allNotes);
+const sortedRootKeys = Object.keys(root).sort((a, b) => {
+  return root[a].label.localeCompare(root[b].label);
+});
 ---
 
 <nav class="space-y-0.5">
   {
-    items.map((item) => {
-      const isRootCategory = item.depth === 0 && item.isFolder;
-      const isSubCategory = item.isFolder && item.depth > 0;
-      const isActive =
-        item.href && currentPath === item.href.replace(/\/$/, "");
-
-      if (isRootCategory) {
-        return (
-          <span class="block pb-1 pt-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground first:pt-0">
-            {item.label}
-          </span>
-        );
-      }
-
-      if (isSubCategory) {
-        return (
-          <span
-            class:list={[
-              "block text-xs font-medium text-muted-foreground pt-2 pb-1",
-              getIndentClass(item.depth),
-            ]}
-          >
-            {item.label}
-          </span>
-        );
-      }
-
-      return (
-        <a
-          href={item.href}
-          class:list={[
-            "block text-sm leading-snug transition-colors rounded py-px",
-            getIndentClass(item.depth),
-            isActive
-              ? "font-medium text-primary"
-              : "text-muted-foreground hover:text-foreground",
-          ]}
-        >
-          {isActive && <span class="mr-1">&mdash;</span>}
-          {item.label}
-        </a>
-      );
-    })
+    sortedRootKeys.map((key) => (
+      <WikiNavNode
+        node={root[key]}
+        depth={0}
+        currentPath={currentPath}
+        class="pb-4"
+      />
+    ))
   }
 </nav>
