@@ -46,7 +46,15 @@ function buildTree(notes: typeof allNotes): Record<string, TreeNode> {
 
 const root = buildTree(allNotes);
 const sortedRootKeys = Object.keys(root).sort((a, b) => {
-  return root[a].label.localeCompare(root[b].label);
+  const nodeA = root[a];
+  const nodeB = root[b];
+  const isAFolder = Object.keys(nodeA.children).length > 0;
+  const isBFolder = Object.keys(nodeB.children).length > 0;
+
+  if (!isAFolder && isBFolder) return -1;
+  if (isAFolder && !isBFolder) return 1;
+
+  return nodeA.label.localeCompare(nodeB.label);
 });
 ---
 

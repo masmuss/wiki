@@ -23,9 +23,17 @@ interface Props {
 
 const { node, class: className, depth, currentPath } = Astro.props;
 
-const childrenKeys = Object.keys(node.children).sort((a, b) =>
-  node.children[a].label.localeCompare(node.children[b].label),
-);
+const childrenKeys = Object.keys(node.children).sort((a, b) => {
+  const nodeA = node.children[a];
+  const nodeB = node.children[b];
+  const isAFolder = Object.keys(nodeA.children).length > 0;
+  const isBFolder = Object.keys(nodeB.children).length > 0;
+
+  if (!isAFolder && isBFolder) return -1;
+  if (isAFolder && !isBFolder) return 1;
+
+  return nodeA.label.localeCompare(nodeB.label);
+});
 const hasChildren = childrenKeys.length > 0;
 const isActive = node.href && currentPath === node.href.replace(/\/$/, "");
 const isFolder = !node.href && hasChildren;
