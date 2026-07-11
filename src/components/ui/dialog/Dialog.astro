@@ -190,7 +190,14 @@ const {
 <script>
   import { createDialog } from "@data-slot/dialog";
 
-  document
-    .querySelectorAll<HTMLElement>('[data-slot="dialog"]')
-    .forEach((el) => createDialog(el));
+  document.addEventListener("astro:page-load", () => {
+    document
+      .querySelectorAll<HTMLElement>('[data-slot="dialog"]')
+      .forEach((el) => {
+        if (!el.hasAttribute("data-dialog-initialized")) {
+          createDialog(el);
+          el.setAttribute("data-dialog-initialized", "true");
+        }
+      });
+  });
 </script>
