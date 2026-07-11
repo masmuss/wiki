@@ -196,9 +196,15 @@ const {
 <script>
   import { createCollapsible } from "@data-slot/collapsible";
 
-  document
-    .querySelectorAll<HTMLElement>('[data-slot="collapsible"]')
-    .forEach((el) => {
-      createCollapsible(el);
-    });
+  document.addEventListener("astro:page-load", () => {
+    document
+      .querySelectorAll<HTMLElement>('[data-slot="collapsible"]')
+      .forEach((el) => {
+        // Prevent double initialization
+        if (!el.hasAttribute("data-collapsible-initialized")) {
+          createCollapsible(el);
+          el.setAttribute("data-collapsible-initialized", "true");
+        }
+      });
+  });
 </script>
