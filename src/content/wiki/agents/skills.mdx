@@ -1,0 +1,68 @@
+---
+title: "Agent Skills"
+description: "Daftar Agent Skills yang digunakan untuk menambah kapabilitas spesifik pada AI Agent."
+createdAt: 2026-07-11
+updatedAt: 2026-07-11
+tags: ["ai", "agents", "skills", "mcp"]
+isPinned: false
+growthStage: "evergreen"
+---
+
+# Agent Skills
+
+**Agent Skills** adalah kumpulan instruksi, basis pengetahuan, dan seperangkat aturan yang dapat di-instal ke dalam AI Agent (seperti Antigravity) agar ia bertindak seolah-olah menjadi pakar (_expert_) dalam spesifikasi teknologi tertentu.
+
+Sumber utama dari ekosistem _skills_ ini didokumentasikan dan disediakan oleh [**skills.sh**](https://skills.sh/).
+
+## Mengapa Menggunakan Skills?
+
+AI biasa sering kali hanya memiliki pengetahuan umum (atau _training data_ yang sudah kadaluarsa). Dengan _skills_, agent kita memiliki akses langsung ke **praktik terbaik (_best practices_) terbaru**, referensi dokumentasi terkini, dan gaya kode yang konsisten sesuai standar.
+
+## Skills yang Sering Digunakan
+
+### 1. Stack & Framework Utama
+
+- **[Caveman](https://skills.sh/)**: Skill khusus untuk _stack_ yang kuat dan andal, sering dikaitkan dengan arsitektur simpel namun sangat efisien.
+- **[Golang](https://skills.sh/)**: Memberikan pedoman standar idiom Go, manajemen _goroutine_, penulisan _unit test_, dan arsitektur _backend_ yang tangguh.
+- **[React](https://skills.sh/)**: Praktik terbaik untuk React modern, pengelolaan _state_, implementasi _hooks_ kustom, dan optimasi _render_.
+- **[TypeScript Pro & Clean Code](https://skills.sh/)**: Memaksa agent untuk patuh pada prinsip _Clean Code_ karya Robert C. Martin (Uncle Bob)—tidak ada _magic numbers_, penamaan variabel yang deskriptif, dan satu fungsi untuk satu tanggung jawab.
+
+### 2. UI & Ekosistem Khusus
+
+- **[Astro Expert](https://skills.sh/)**: Memberikan kemampuan untuk membuat komponen `.astro` dengan _islands architecture_, manipulasi _content collections_, dan konfigurasi SSR.
+- **[Shadcn UI](https://skills.sh/)**: Memberikan kapabilitas agar Agent bisa mengelola komponen _shadcn/ui_ (menambah, mengubah, dan menggunakan `components.json`) tanpa perlu diinstruksikan manual.
+- **[Svelte 5 Best Practices](https://skills.sh/)**: Mendidik agent tentang paradigma terbaru _Svelte 5 Runes_ (`$state`, `$derived`, `$effect`) dan pemindahan dari Svelte 4.
+
+### 3. Backend & Authentication
+
+- **[Better Auth Best Practices](https://skills.sh/)**: Mencegah agent berhalusinasi soal konfigurasi autentikasi. Menambahkan basis pengetahuan tentang Better Auth untuk _setup_ sesi, kredensial, dan OAuth dalam TypeScript.
+
+### 4. Workflow & Tools
+
+- **Boy Scout**: Prinsip _'selalu tinggalkan kode lebih bersih dari saat menemukannya'_. Skill ini otomatis akan memandu AI untuk merapikan _codebase_ (membuang kode tak terpakai, memperbaiki _lint_) saat sedang mengerjakan tugas lain.
+- **Modern Web Guidance**: Mewajibkan AI untuk menggunakan fitur web modern seputar aksesibilitas, HTML semantik, performa (_Core Web Vitals_), dan API _browser_ terkini ketimbang metode kuno.
+
+## Model Context Protocol (MCP)
+
+Selain _Skills_ yang berbasis teks instruksional, AI Agents modern mengandalkan **MCP (Model Context Protocol)**. MCP adalah protokol standar terbuka yang digunakan untuk menghubungkan model AI secara langsung ke sumber data eksternal (seperti Github, Figma, Notion, atau database SQL) dan memungkinkannya menggunakan _tools_ lokal.
+
+- **Kegunaan**: AI tidak perlu "menebak" atau sekadar mengandalkan hasil _copy-paste_ dari pengguna. Dengan MCP, agent dapat mengeksekusi perintah, membaca data _real-time_, dan memberikan aksi (seperti melakukan audit keamanan otomatis).
+- **Integrasi**: Biasanya di-load sebagai server (`mcp-server`) yang terhubung langsung ke IDE atau _CLI agent_.
+
+### MCP yang Sering Digunakan
+
+Beberapa MCP _server_ yang berjalan di lingkungan pengembangan saat ini:
+
+- **fallow**: Analisis kode statis, mendeteksi _dead code_, dependensi yang berantakan, serta memberikan metrik performa (_hot paths_, _cleanup candidates_).
+- **shadcn**: Mengakses komponen Shadcn UI langsung dari sumbernya untuk instalasi, pratinjau, dan integrasi yang lancar tanpa _copy-paste_ manual.
+- **astro-docs / next-devtools / svelte**: Memberikan kemampuan untuk membaca dokumentasi dan berinteraksi dengan instans aplikasi lokal (Next.js/Svelte/Astro) melalui CLI/Agent.
+- **chrome-devtools**: Memberikan agent kemampuan untuk mengontrol _browser_ (menavigasi halaman, mengambil _screenshot_, mengevaluasi _script_, hingga menganalisis metrik performa).
+
+## Cara Instalasi Skills
+
+Melalui Antigravity (AGY), Anda cukup memberitahu AI untuk mencari dan meng-install _skill_ baru:
+
+```bash
+# Contoh perintah kepada agent
+"Tolong instal skill shadcn dan svelte5-best-practices dari skills.sh"
+```
