@@ -1,0 +1,657 @@
+---
+title: "Go Local Environment Setup"
+description: "Setup environment development Go: Taskfile, golangci-lint, Air, Lefthook, Mockery, Docker Compose."
+createdAt: 2026-07-18
+updatedAt: 2026-07-18
+tags: ["go", "golang", "devtools", "setup"]
+isPinned: false
+growthStage: "seedling"
+---
+
+import FileTree from "@/components/wiki/FileTree.astro";
+
+## Ringkasan
+
+Setup ini diambil dari [masmuss/gokit-starter](https://github.com/masmuss/gokit-starter) — sebuah starter kit Go production-ready dengan Clean Architecture, `uber-go/fx` untuk DI, Ent ORM, Chi router, dan observability.
+
+## Tools yang Dipakai
+
+| Tool                                                     | Fungsi                             | Instalasi                                        |
+| -------------------------------------------------------- | ---------------------------------- | ------------------------------------------------ |
+| **[Task](https://taskfile.dev/)**                        | Task runner pengganti Makefile     | `brew install go-task`                           |
+| **[golangci-lint](https://golangci-lint.run/)**          | Comprehensive linter (40+ linters) | `brew install golangci-lint`                     |
+| **[Air](https://github.com/air-verse/air)**              | Hot reload saat development        | `go install github.com/air-verse/air@latest`     |
+| **[Lefthook](https://github.com/evilmartians/lefthook)** | Git hooks manager                  | `brew install lefthook`                          |
+| **[Mockery](https://vektra.github.io/mockery/)**         | Generate mock dari interface       | `go install github.com/vektra/mockery/v2@latest` |
+| **[Atlas](https://atlasgo.io/)**                         | Database migration tool            | `brew install ariga/tap/atlas`                   |
+| **[Docker](https://www.docker.com/)**                    | Container runtime (DB, Redis)      | `brew install --cask docker`                     |
+
+---
+
+### 1. Taskfile (Task Runner)
+
+Gunakan [Task](https://taskfile.dev/) sebagai pengganti Makefile. YAML-based, lebih readable, dan mendukung variable interpolation.
+
+**`taskfile.yml`** di root project:
+
+```yaml
+version: "3"
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+
+  server:
+    desc: Run server with hot reload
+    cmds:
+      - air -c air.toml
+
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run
+
+  mocks:
+    desc: Generate mocks
+    cmds:
+      - mockery
+
+  test:
+    desc: Run all tests
+    cmds:
+      - go test -v -race ./...
+
+  build:
+    desc: Build server binary with version injection
+    cmds:
+      - go build -ldflags="-X main.version=$(git describe --always --abbrev=7 --dirty 2>/dev/null || echo dev)" -o bin/app ./cmd/server
+
+  generate:
+    desc: Regenerate Ent code
+    cmds:
+      - go generate ./internal/database/ent/...
+
+  format:
+    desc: Format all Go files
+    cmds:
+      - gofmt -w .
+
+  tidy:
+    desc: Clean up go modules
+    cmds:
+      - go mod tidy
+      - go mod verify
+
+  check:
+    desc: Run format, lint, test, and tidy
+    cmds:
+      - task: format
+      - task: lint
+      - task: test
+      - task: tidy
+
+  db:clean:
+    desc: Reset database to clean state
+    cmds:
+      - docker compose down -v
+      - docker compose up -d
+      - sleep 5
+
+  db:migrate:
+    desc: Apply pending migrations
+    cmds:
+      - atlas migrate apply --dir "file://database/migrations" --url "postgres://{{.DB_USER}}:{{.DB_PASS}}@{{.DB_HOST}}:{{.DB_PORT}}/{{.DB_NAME}}?sslmode=disable"
+    vars:
+      DB_USER: '{{default "gokit_starter" .DB_USER}}'
+      DB_PASS: '{{default "secret" .DB_PASS}}'
+      DB_HOST: '{{default "127.0.0.1" .DB_HOST}}'
+      DB_PORT: '{{default "5432" .DB_PORT}}'
+      DB_NAME: '{{default "gokit_starter" .DB_NAME}}'
+
+  clean:
+    desc: Remove build artifacts
+    cmds:
+      - rm -rf bin/ tmp/
+```
+
+#### Perintah Sehari-hari
+
+```bash
+task server     # Mulai dev server dengan hot reload
+task lint       # Jalankan linter
+task test       # Jalankan semua test
+task build      # Build binary
+task check      # Format + lint + test + tidy (sebelum commit)
+task db:clean   # Reset database
+task db:migrate # Jalankan migrasi
+```
+
+---
+
+### 2. golangci-lint
+
+Konfigurasi **`.golangci.yml`** yang ketat tapi tidak ekstrem. Diadaptasi dari [maratori/golangci-lint-config](https://github.com/maratori/golangci-lint-config).
+
+```yaml
+version: "2"
+
+issues:
+  max-same-issues: 50
+
+formatters:
+  enable:
+    - goimports
+    - golines
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/masmuss/gokit-starter
+    golines:
+      max-len: 120
+
+linters:
+  enable:
+    - errcheck
+    - errorlint
+    - gocritic
+    - govet
+    - revive
+    - staticcheck
+    - unused
+    - musttag
+    - sloglint
+    - godoclint
+  settings:
+    errcheck:
+      check-type-assertions: true
+    gocritic:
+      settings:
+        captLocal:
+          paramsOnly: false
+        underef:
+          skipRecvDeref: false
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+      settings:
+        shadow:
+          strict: true
+    sloglint:
+      no-global: all
+      context: scope
+    staticcheck:
+      checks:
+        - all
+        - -ST1000 # package comment
+        - -ST1016 # receiver names
+        - -QF1008 # embedded field selector
+  exclusions:
+    warn-unused: true
+    presets:
+      - std-error-handling
+      - common-false-positives
+```
+
+#### Linter yang Diaktifkan
+
+| Linter        | Fungsi                                                  |
+| ------------- | ------------------------------------------------------- |
+| `errcheck`    | Deteksi error return yang tidak di-check                |
+| `errorlint`   | Pastikan error handling idiomatic                       |
+| `gocritic`    | Deteksi code smell (captLocal, underef, dll)            |
+| `govet`       | Semua analyzer bawaan Go                                |
+| `revive`      | Alternatif `golint`, lebih extensible                   |
+| `staticcheck` | Static analysis tingkat lanjut                          |
+| `unused`      | Deteksi kode tidak terpakai                             |
+| `musttag`     | Validasi struct tag                                     |
+| `sloglint`    | Enforce `slog` best practices (context-only, no global) |
+| `godoclint`   | Validasi godoc (link, stdlib doclink)                   |
+
+#### Formatters
+
+| Formatter   | Fungsi                                           |
+| ----------- | ------------------------------------------------ |
+| `goimports` | Format + grouping import (local prefix terpisah) |
+| `golines`   | Potong baris panjang (>120 karakter)             |
+
+---
+
+### 3. Air (Hot Reload)
+
+**`air.toml`** — reload otomatis setiap ada perubahan file `.go`, `.tpl`, `.tmpl`, `.html`.
+
+```toml
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  bin = "./tmp/main"
+  cmd = "go build -o ./tmp/main ./cmd/server/main.go"
+  delay = 1000
+  exclude_dir = ["assets", "bin", "tmp", "vendor", "testdata"]
+  exclude_regex = ["_test.go"]
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  kill_delay = "0s"
+  rerun = false
+  rerun_delay = 500
+```
+
+Jalankan: `task server` atau `air -c air.toml`
+
+---
+
+### 4. Lefthook (Git Hooks)
+
+**`lefthook.yml`** — automated check saat commit dan push.
+
+```yaml
+pre-commit:
+  parallel: true
+  commands:
+    fmt:
+      glob: "*.go"
+      run: gofmt -w {staged_files} && goimports -w {staged_files}
+
+    linter:
+      glob: "*.go"
+      run: golangci-lint run ./...
+
+    test:
+      glob: "*.go"
+      run: go test ./...
+
+    tidy:
+      run: go mod tidy
+
+pre-push:
+  parallel: true
+  commands:
+    build:
+      glob: "*.go"
+      run: go build ./...
+
+    vet:
+      glob: "*.go"
+      run: go vet ./...
+```
+
+Install hooks setelah clone project:
+
+```bash
+lefthook install
+```
+
+---
+
+### 5. Mockery (Mock Generation)
+
+**`.mockery.yaml`** — generate mock dari interface untuk testing.
+
+```yaml
+with-expecter: true
+all: true
+recursive: true
+outpkg: mocks
+dir: test/mocks
+filename: "{{.InterfaceName}}_mock.go"
+mockname: "{{.InterfaceName}}Mock"
+packages:
+  github.com/masmuss/gokit-starter/internal/modules/auth/app:
+    interfaces:
+      Repository:
+      PasswordHasher:
+      TokenIssuer:
+```
+
+Jalankan: `task mocks` atau `mockery`
+
+Mock disimpan di `test/mocks/`. Gunakan di test:
+
+```go
+import "github.com/masmuss/gokit-starter/test/mocks"
+
+func TestLogin(t *testing.T) {
+    repo := mocks.NewRepositoryMock(t)
+    repo.On("FindByEmail", ctx, "test@example.com").Return(user, nil)
+
+    svc := NewAuthService(repo, ...)
+    token, err := svc.Login(ctx, req)
+    assert.NoError(t, err)
+}
+```
+
+---
+
+### 6. Docker Compose
+
+**`compose.yml`** — PostgreSQL 18 + Adminer + Redis 7 + RedisInsight.
+
+```yaml
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gokit_starter}
+      POSTGRES_USER: ${POSTGRES_USER:-gokit_starter}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+    volumes:
+      - db_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gokit_starter -d gokit_starter"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  db_data:
+```
+
+Jalankan:
+
+```bash
+docker compose up -d     # Start semua service
+docker compose down      # Stop
+docker compose down -v   # Stop + hapus volume (reset data)
+```
+
+---
+
+### 7. Environment Variables
+
+**`.env.example`** — template environment yang dibutuhkan aplikasi.
+
+```text
+APP_NAME=gokit-starter
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+APP_PORT=8080
+APP_VERSION=dev
+
+BCRYPT_ROUNDS=12
+
+LOG_CHANNEL=stack
+LOG_STACK=single
+LOG_LEVEL=debug
+
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=gokit_starter
+DB_USERNAME=gokit_starter
+DB_PASSWORD=secret
+
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+
+CACHE_STORE=redis
+REDIS_CLIENT=go-redis
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+
+AUTH_JWT_SECRET=change-me
+AUTH_JWT_ISSUER=gokit-starter
+AUTH_JWT_TTL=60
+```
+
+Copy dan sesuaikan:
+
+```bash
+cp .env.example .env
+# Edit .env sesuai environment lokal
+```
+
+---
+
+### 8. Config Loader
+
+Load config dengan struct + validasi. Contoh dari `internal/config/config.go`:
+
+```go
+package config
+
+import (
+	"fmt"
+	"os"
+	"strconv"
+
+	"github.com/joho/godotenv"
+)
+
+type Config struct {
+	AppName    string
+	AppEnv     string
+	AppURL     string
+	AppPort    int
+	AppVersion string
+
+	DBHost     string
+	DBPort     int
+	DBDatabase string
+	DBUsername string
+	DBPassword string
+
+	RedisHost string
+	RedisPort int
+
+	AuthJWTSecret string
+	AuthJWTIssuer string
+	AuthJWTTTL    int
+}
+
+func LoadConfig() (*Config, error) {
+	_ = godotenv.Load() // optional, tidak error jika file tidak ada
+
+	cfg := &Config{
+		AppName:    getEnv("APP_NAME", "gokit-starter"),
+		AppEnv:     getEnv("APP_ENV", "local"),
+		AppURL:     getEnv("APP_URL", "http://localhost"),
+		AppPort:    getEnvInt("APP_PORT", 8080),
+		AppVersion: getEnv("APP_VERSION", "dev"),
+		// ... fields lainnya
+	}
+
+	if err := cfg.validate(); err != nil {
+		return nil, fmt.Errorf("config validation failed: %w", err)
+	}
+
+	return cfg, nil
+}
+
+func (c *Config) validate() error {
+	if c.AppEnv != "local" && c.AppEnv != "production" {
+		return fmt.Errorf("APP_ENV must be 'local' or 'production', got %q", c.AppEnv)
+	}
+	if len(c.AuthJWTSecret) < 32 {
+		return fmt.Errorf("JWTSecret must be at least 32 characters")
+	}
+	if c.AppPort < 1 || c.AppPort > 65535 {
+		return fmt.Errorf("AppPort must be between 1 and 65535")
+	}
+	return nil
+}
+
+func getEnv(key, fallback string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return fallback
+}
+
+func getEnvInt(key string, fallback int) int {
+	if v := os.Getenv(key); v != "" {
+		i, err := strconv.Atoi(v)
+		if err == nil {
+			return i
+		}
+	}
+	return fallback
+}
+```
+
+---
+
+### 9. .gitignore
+
+```gitignore
+# Binary output
+bin/
+*.exe
+
+# Air (hot reload)
+tmp/
+
+# Environment
+.env
+.env.local
+
+# Database
+*.db
+*.db-journal
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Dependency graph
+viz.dot
+```
+
+---
+
+### 10. Main Entry Point
+
+**`cmd/server/main.go`** — binary entry point dengan version injection via `-ldflags`:
+
+```go
+package main
+
+import (
+	"os"
+
+	"go.uber.org/fx"
+
+	"github.com/masmuss/gokit-starter/internal/app"
+)
+
+// Injected at build time
+var version = "dev"
+
+func main() {
+	os.Setenv("APP_VERSION", version)
+	fx.New(app.Module).Run()
+}
+```
+
+Build dengan version:
+
+```bash
+task build
+# Hasil: go build -ldflags="-X main.version=v1.2.3" -o bin/app ./cmd/server
+```
+
+---
+
+## Quick Start (Proyek Baru)
+
+```bash
+# 1. Clone starter
+git clone git@github.com:masmuss/gokit-starter.git my-project
+cd my-project
+
+# 2. Setup environment
+cp .env.example .env
+# Edit .env
+
+# 3. Install tools
+brew install go-task golangci-lint lefthook docker
+go install github.com/air-verse/air@latest
+go install github.com/vektra/mockery/v2@latest
+
+# 4. Install git hooks
+lefthook install
+
+# 5. Start infrastructure
+docker compose up -d
+
+# 6. Run migration
+task db:migrate
+
+# 7. Start dev server
+task server
+# → Server running at http://localhost:8080
+```
+
+---
+
+## File Tree Hasil Akhir
+
+<FileTree>
+
+- my-project/
+  - cmd/server/main.go
+  - internal/
+    - app/ <span class="text-muted-foreground ml-2 text-xs font-sans"># fx Module</span>
+    - config/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Config loader + validasi</span>
+    - domain/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Entity, use case interface</span>
+    - application/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Service, DTO</span>
+    - infrastructure/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Handler, repo, middleware</span>
+  - database/migrations/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Atlas migration files</span>
+  - test/mocks/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Generated mocks</span>
+  - taskfile.yml
+  - .golangci.yml
+  - air.toml
+  - lefthook.yml
+  - .mockery.yaml
+  - compose.yml
+  - .env.example
+  - .gitignore
+
+</FileTree>
+
+---
+
+_Referensi: [masmuss/gokit-starter](https://github.com/masmuss/gokit-starter)_
