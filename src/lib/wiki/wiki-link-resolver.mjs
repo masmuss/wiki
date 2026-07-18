@@ -35,7 +35,9 @@ const wikiLinksMap = buildWikiLinksMap();
 
 export const wikiLinkOptions = {
   pageResolver: (name) => {
-    return [name.replace(/ /g, "-").toLowerCase()];
+    // Handle [[target|label]] — extract target before the pipe
+    const target = name.includes("|") ? name.split("|")[0] : name;
+    return [target.replace(/ /g, "-").toLowerCase()];
   },
   hrefTemplate: (permalink) => {
     const resolved = wikiLinksMap.get(permalink) || permalink;

@@ -1,0 +1,599 @@
+---
+title: "Astro Local Environment Setup"
+description: "Setup environment development Astro: package manager, Biome/ESLint, Lefthook, Astro config, Content Collections, testing, CI/CD."
+createdAt: 2026-07-18
+updatedAt: 2026-07-18
+tags: ["astro", "devtools", "setup", "frontend"]
+isPinned: false
+growthStage: "seedling"
+---
+
+import FileTree from "@/components/wiki/FileTree.astro";
+
+## Ringkasan
+
+Setup ini diambil dari dua project Astro production:
+
+- **[masmuss/pictogrammer](https://github.com/masmuss/pictogrammer)** — personal website dengan Svelte islands, Biome, Vitest + Playwright
+- **[masmuss/veka](https://github.com/masmuss/veka)** — wiki/content-heavy site dengan MDX, wiki-link, ESLint/Prettier
+
+Keduanya menggunakan **Astro 7**, **Tailwind v4**, **TypeScript 6**, dan **Lefthook**.
+
+---
+
+## Tools yang Dipakai
+
+| Tool                                                                 | Fungsi                            | Instalasi                                |
+| -------------------------------------------------------------------- | --------------------------------- | ---------------------------------------- |
+| **[pnpm](https://pnpm.io/)** / **[Bun](https://bun.sh/)**            | Package manager                   | `brew install pnpm` / `brew install bun` |
+| **[Biome](https://biomejs.dev/)**                                    | Linting + formatting (all-in-one) | `brew install biome`                     |
+| **[ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)** | Alternatif: linting + formatting  | `pnpm add -D eslint prettier`            |
+| **[Lefthook](https://github.com/evilmartians/lefthook)**             | Git hooks manager                 | `brew install lefthook`                  |
+| **[Vitest](https://vitest.dev/)**                                    | Unit testing                      | `bun add -D vitest`                      |
+| **[Playwright](https://playwright.dev/)**                            | E2E + visual regression           | `bun add -D @playwright/test`            |
+| **[Pagefind](https://pagefind.app/)**                                | Static search index               | `pnpm add astro-pagefind`                |
+
+---
+
+## 1. Package Manager & Scripts
+
+Dua pendekatan yang dipakai:
+
+### Pendekatan A: Bun (pictogrammer)
+
+```json
+{
+  "scripts": {
+    "dev": "astro dev --host",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "astro check",
+    "test": "bun run test:unit:run && CI=true bun run test:e2e",
+    "test:unit": "vitest",
+    "test:unit:run": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  }
+}
+```
+
+### Pendekatan B: pnpm (veka/wiki)
+
+```json
+{
+  "packageManager": "pnpm@11.13.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "commitlint": "commitlint",
+    "prepare": "lefthook install",
+    "preinstall": "npx only-allow pnpm"
+  }
+}
+```
+
+**Rekomendasi**: **Bun** untuk kecepatan install dan monorepo-friendly. **pnpm** untuk strict dependency resolution. Pilih satu, enforce via `preinstall` script.
+
+---
+
+## 2. Biome (Linting + Formatting)
+
+Biome menggantikan ESLint + Prettier. Konfigurasi dari pictogrammer:
+
+```json
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.3/schema.json",
+  "assist": {
+    "actions": { "source": { "organizeImports": "on" } }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "tab",
+    "indentWidth": 2,
+    "lineWidth": 80
+  },
+  "javascript": {
+    "formatter": { "trailingCommas": "none" }
+  },
+  "json": {
+    "formatter": { "trailingCommas": "none" }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "a11y": { "noSvgWithoutTitle": "off" },
+      "suspicious": { "noExplicitAny": "warn" },
+      "style": {
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useSelfClosingElements": "error",
+        "noUnusedTemplateLiteral": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error"
+      },
+      "nursery": {
+        "useSortedClasses": { "level": "warn", "fix": "safe" }
+      }
+    }
+  },
+  "vcs": {
+    "clientKind": "git",
+    "enabled": true,
+    "useIgnoreFile": true
+  },
+  "css": {
+    "parser": { "tailwindDirectives": true }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.svelte"],
+      "linter": {
+        "rules": {
+          "style": { "useConst": "off" },
+          "correctness": {
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### Jika pakai ESLint + Prettier (veka/wiki)
+
+```js
+// eslint.config.js
+import eslintPluginAstro from "eslint-plugin-astro";
+
+export default [
+  ...eslintPluginAstro.configs["flat/recommended"],
+  {
+    ignores: ["dist/", ".astro/", "node_modules/"],
+  },
+];
+```
+
+```json
+// .prettierrc
+{
+  "plugins": ["prettier-plugin-astro"],
+  "overrides": [{ "files": "*.astro", "options": { "parser": "astro" } }]
+}
+```
+
+---
+
+## 3. Lefthook (Git Hooks)
+
+### Pola A: Biome-based (pictogrammer)
+
+```yaml
+# lefthook.yml
+pre-commit:
+  parallel: true
+  commands:
+    check:
+      glob: "*.{ts,tsx,js,jsx,astro,svelte,css,json,md,mdx}"
+      run: bunx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+    astro-check:
+      glob: "*.{ts,tsx,astro}"
+      run: bunx astro check
+
+pre-push:
+  parallel: false
+  commands:
+    test:unit:
+      run: bun run test:unit:run
+```
+
+### Pola B: ESLint/Prettier-based (veka/wiki)
+
+```yaml
+# lefthook.yml
+pre-commit:
+  parallel: true
+  jobs:
+    - name: lint
+      run: pnpm lint {staged_files}
+      glob: "*.{js,ts,mjs,cjs,astro}"
+    - name: check
+      run: pnpm astro check
+    - name: format
+      run: pnpm format --check {staged_files}
+      glob: "*.{js,ts,mjs,cjs,astro,json,yaml,yml}"
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: pnpm commitlint --edit {1}
+```
+
+Install hooks setelah clone:
+
+```bash
+lefthook install
+# atau via prepare script: pnpm install akan otomatis trigger
+```
+
+---
+
+## 4. Astro Config
+
+Konfigurasi Astro 7 yang mencakup integrasi, markdown plugins, fonts, dan Vite.
+
+```ts
+// astro.config.ts
+import { unified } from "@astrojs/markdown-remark";
+import sitemap from "@astrojs/sitemap";
+import svelte from "@astrojs/svelte"; // jika pakai Svelte islands
+import mdx from "@astrojs/mdx"; // jika pakai MDX
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig, fontProviders } from "astro/config";
+import pagefind from "astro-pagefind";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import remarkDeflist from "remark-deflist";
+import remarkDirective from "remark-directive";
+import rehypeExternalLinks from "rehype-external-links";
+import { remarkAlert } from "remark-github-blockquote-alert";
+import wikiLink from "remark-wiki-link";
+
+export default defineConfig({
+  site: "https://example.com",
+  trailingSlash: "never",
+
+  // Fonts: Astro 7 built-in font provider
+  fonts: [
+    {
+      provider: fontProviders.google(),
+      name: "Geist",
+      cssVariable: "--font-sans",
+      subsets: ["latin"],
+    },
+    {
+      provider: fontProviders.google(),
+      name: "Geist Mono",
+      cssVariable: "--font-mono",
+      subsets: ["latin"],
+    },
+  ],
+
+  // Integrations
+  integrations: [
+    sitemap(),
+    svelte(), // framework islands
+    mdx(), // MDX support
+    pagefind(), // static search
+  ],
+
+  // Markdown: remark + rehype plugins
+  markdown: {
+    processor: unified({
+      remarkPlugins: [
+        remarkMath,
+        remarkDeflist,
+        remarkDirective,
+        remarkAlert,
+        [wikiLink, {/* wiki-link options */}],
+      ],
+      rehypePlugins: [
+        rehypeKatex,
+        [
+          rehypeExternalLinks,
+          { rel: ["noreferrer", "noopener"], target: "_blank" },
+        ],
+      ],
+    }),
+    shikiConfig: {
+      themes: {
+        dark: "github-dark",
+        light: "github-light",
+      },
+      wrap: true,
+    },
+  },
+
+  // Vite: Tailwind v4 + path alias
+  vite: {
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+  },
+});
+```
+
+### Plugin Remark/Rehype yang Sering Dipakai
+
+| Plugin                           | Fungsi                         |
+| -------------------------------- | ------------------------------ |
+| `remark-math` + `rehype-katex`   | Render math (LaTeX)            |
+| `remark-deflist`                 | Definition list (`<dl>`)       |
+| `remark-directive`               | Custom directive syntax        |
+| `remark-github-blockquote-alert` | GitHub-style admonitions       |
+| `remark-wiki-link`               | `[[wikilink]]` syntax          |
+| `rehype-external-links`          | Auto `target="_blank"` + `rel` |
+| `rehype-katex`                   | Render KaTeX di HTML           |
+
+---
+
+## 5. Content Collections (Astro 5+)
+
+Astro 5+ menggunakan **Content Layer API** dengan loader:
+
+```ts
+// src/content.config.ts
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
+
+const blog = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/blog" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    createdAt: z.date(),
+    updatedAt: z.date().optional(),
+    tags: z.array(z.string()).default([]),
+    isPinned: z.boolean().default(false),
+    growthStage: z
+      .enum(["seedling", "budding", "evergreen"])
+      .default("seedling"),
+  }),
+});
+
+export const collections = { blog };
+```
+
+### Schema Pattern untuk Wiki/Content-heavy
+
+```ts
+// Growth stage untuk konten
+growthStage: z.enum(["seedling", "budding", "evergreen"]).default("seedling");
+```
+
+| Stage       | Arti                             |
+| ----------- | -------------------------------- |
+| `seedling`  | Draft awal, masih tumbuh         |
+| `budding`   | Mulai matang, tapi belum lengkap |
+| `evergreen` | Konten stabil dan lengkap        |
+
+---
+
+## 6. TypeScript Config
+
+```json
+// tsconfig.json
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": ["ES2020", "DOM"],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}
+```
+
+---
+
+## 7. Testing
+
+### Unit Test (Vitest)
+
+```ts
+// vitest.config.ts
+import path from "node:path";
+import { getViteConfig } from "astro/config";
+
+export default getViteConfig({
+  test: {
+    globals: true,
+    environment: "node",
+    include: ["tests/unit/**/*.{test,spec}.{js,ts}"],
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+});
+```
+
+Jalankan: `bun run test:unit` atau `vitest`
+
+### E2E Test (Playwright + Visual Regression)
+
+```ts
+// playwright.config.ts
+import { defineConfig, devices } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./tests/e2e",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  use: {
+    baseURL: "http://localhost:4321",
+    trace: "on-first-retry",
+  },
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.05,
+      threshold: 0.2,
+    },
+  },
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  webServer: {
+    command: "bun run build && bun run preview",
+    url: "http://localhost:4321",
+    reuseExistingServer: !process.env.CI,
+    timeout: 180 * 1000,
+  },
+});
+```
+
+Jalankan: `bun run test:e2e` atau `playwright test`
+
+---
+
+## 8. CI/CD (semantic-release)
+
+Digunakan di kedua project untuk otomatisasi versioning dan changelog:
+
+```json
+// package.json
+{
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.2",
+    "@semantic-release/release-notes-generator": "^14.0.3",
+    "semantic-release": "^25.0.7"
+  },
+  "release": {
+    "branches": ["main"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ]
+  }
+}
+```
+
+Trigger via GitHub Actions atau manual: `npx semantic-release`
+
+---
+
+## 9. Project Structure
+
+Dua pendekatan struktur folder:
+
+### Pola A: Feature-based (pictogrammer)
+
+<FileTree>
+
+- project/
+  - src/
+    - assets/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Static assets, styles, images, fonts</span>
+    - components/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared UI components (.astro/.svelte)</span>
+    - config/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Site config constants</span>
+    - content/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Content collections (blog, projects, etc.)</span>
+    - layouts/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Page layouts</span>
+    - lib/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Utils, schemas, helpers</span>
+    - pages/ <span class="text-muted-foreground ml-2 text-xs font-sans"># File-based routing</span>
+    - plugins/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Custom remark plugins</span>
+    - types.ts
+    - content.config.ts
+  - tests/
+    - unit/
+    - e2e/
+  - public/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Static files (served as-is)</span>
+
+</FileTree>
+
+### Pola B: Flat (veka/wiki)
+
+<FileTree>
+
+- project/
+  - src/
+    - assets/
+    - components/
+      - shell/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Header, footer, sidebar</span>
+      - layout/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Layout components</span>
+      - shared/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Button, Card, Badge</span>
+      - wiki/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Wiki-specific components</span>
+    - content/wiki/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Wiki pages (nested dirs)</span>
+    - layouts/
+    - lib/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Utils, custom plugins</span>
+    - pages/
+    - content.config.ts
+  - public/
+
+</FileTree>
+
+---
+
+## Quick Start (Proyek Baru)
+
+```bash
+# 1. Create project
+pnpm create astro@latest my-site -- --template minimal
+# atau: bun create astro@latest my-site
+cd my-site
+
+# 2. Install core dependencies
+pnpm add @astrojs/mdx @astrojs/sitemap @tailwindcss/vite tailwindcss astro-pagefind
+pnpm add -D @astrojs/check typescript
+
+# 3. Install tooling (pilih salah satu)
+# Opsi A: Biome
+pnpm add -D @biomejs/biome lefthook
+# Opsi B: ESLint + Prettier
+pnpm add -D eslint eslint-plugin-astro prettier prettier-plugin-astro lefthook
+
+# 4. Jika perlu Svelte islands
+pnpm add @astrojs/svelte svelte
+
+# 5. Jika perlu testing
+pnpm add -D vitest @playwright/test
+
+# 6. Setup git hooks
+pnpm lefthook install
+
+# 7. Start dev server
+pnpm dev
+```
+
+---
+
+## Perbandingan Dua Setup
+
+| Aspek                 | pictogrammer                                           | veka/wiki                       |
+| --------------------- | ------------------------------------------------------ | ------------------------------- |
+| **Package manager**   | Bun                                                    | pnpm                            |
+| **Lint/Format**       | Biome                                                  | ESLint + Prettier               |
+| **Framework islands** | Svelte 5                                               | N/A (pure Astro + Lucide)       |
+| **Testing**           | Vitest + Playwright (visual)                           | N/A                             |
+| **Content**           | Blog, projects, experiences                            | Wiki pages                      |
+| **Markdown plugins**  | directive, admonitions, deflist, supersub, github-card | math, wiki-link, deflist, alert |
+| **CI/CD**             | semantic-release                                       | semantic-release + commitlint   |
+| **Fonts**             | iA Writer Quattro + IBM Plex Mono                      | Geist + Geist Mono + Spectral   |
+
+---
+
+_Referensi: [masmuss/pictogrammer](https://github.com/masmuss/pictogrammer), [masmuss/veka](https://github.com/masmuss/veka)_
