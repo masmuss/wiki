@@ -2,7 +2,7 @@
 title: "AI Agents"
 description: "Rekomendasi AI Agents yang sering digunakan untuk membantu proses development."
 createdAt: 2026-07-11
-updatedAt: 2026-07-11
+updatedAt: 2026-07-18
 tags: ["ai", "agents", "tools"]
 isPinned: false
 growthStage: "evergreen"
@@ -12,9 +12,16 @@ Sebagai _solo full-stack developer_, memanfaatkan AI Agent adalah keharusan untu
 
 Berikut adalah daftar AI Agents utama yang menjadi standar dalam alur kerja (workflow):
 
+## Zed
+
+[Zed](https://zed.dev/) adalah _code editor_ utama yang digunakan sehari-hari. Zed memiliki fitur **Agent** bawaan yang terintegrasi langsung dengan _file system_, _terminal_, LSP, dan ekosistem **Skills**. Agent di Zed mendukung _multi-step editing_, _parallel tool calls_, dan _session persistence_.
+
+- **Fokus Utama**: _Daily driver_ editor, _inline editing_, _pair-programming_.
+- **Kelebihan**: Performa tinggi (GPU-accelerated), integrasi native dengan Git dan language server, dan mendukung penuh ekosistem Agent Skills (`skills.sh`).
+
 ## Antigravity (AGY)
 
-Antigravity adalah _Advanced Agentic Coding Assistant_ yang dikembangkan oleh Google Deepmind. Agent ini bekerja langsung di terminal atau IDE dan dapat melakukan tugas kompleks seperti _scaffolding_ proyek, _refactoring_ skala besar, hingga membaca dan mengedit banyak berkas sekaligus.
+[Antigravity](https://antigravity.google) adalah _Advanced Agentic Coding Assistant_ yang dikembangkan oleh Google Deepmind. Agent ini bekerja langsung di terminal atau IDE dan dapat melakukan tugas kompleks seperti _scaffolding_ proyek, _refactoring_ skala besar, hingga membaca dan mengedit banyak berkas sekaligus.
 
 - **Fokus Utama**: _Autonomous Coding_, _Refactoring_, _Debugging_ tingkat lanjut.
 - **Kelebihan**: Berjalan di lokal, terintegrasi penuh dengan _file system_ dan _terminal_, serta mendukung ekosistem **Skills** (seperti `skills.sh`).
@@ -23,7 +30,7 @@ Antigravity adalah _Advanced Agentic Coding Assistant_ yang dikembangkan oleh Go
 
 [Cursor](https://cursor.com/) adalah _AI-first Code Editor_ yang merupakan _fork_ dari VS Code. Cursor sangat kuat untuk _pair-programming_ sehari-hari berkat fitur seperti **Composer** dan **Inline Chat**.
 
-- **Fokus Utama**: _Code Editor_ harian, _Inline Autocomplete_, _Chat with Codebase_.
+- **Fokus Utama**: _Code Editor_ alternatif, _Inline Autocomplete_, _Chat with Codebase_.
 - **Kelebihan**: Sangat responsif, mengerti konteks satu _repository_, dan mendukung _custom rules_ (`.cursorrules`).
 
 ## v0 by Vercel
@@ -33,13 +40,23 @@ Antigravity adalah _Advanced Agentic Coding Assistant_ yang dikembangkan oleh Go
 - **Fokus Utama**: _Prototyping_ UI, _Frontend Generation_.
 - **Kelebihan**: Memangkas waktu dalam menyusun _layout_ dan desain, mudah di-pindah ke proyek Next.js, Astro, maupun Svelte.
 
-## Claude 3.5 Sonnet / ChatGPT
-
-Digunakan sebagai asisten generalis untuk _brainstorming_, perancangan arsitektur, dan memahami log _error_ yang panjang.
-
-- **Claude**: Sangat baik dalam penulisan kode yang bersih dan _nuanced reasoning_.
-- **ChatGPT**: Sangat baik untuk diskusi umum dan analisis data.
-
 ## Opencode
 
-[Opencode](https://opencode.ai/) adalah _AI-first Code Editor_ yang difokuskan pada produktivitas dan menawarkan lingkungan _editing_ terintegrasi. Seperti alternatif lainnya, _editor_ ini mengedepankan automasi dan kemampuan kolaborasi dengan LLM terbaru secara mulus.
+[Opencode](https://opencode.ai/) adalah _AI-native terminal agent_ yang berjalan langsung di terminal. Dirancang untuk tugas _autonomous coding_ seperti membaca/mengedit file, menjalankan command, dan berinteraksi dengan codebase tanpa perlu membuka IDE.
+
+- **Fokus Utama**: Terminal-native agent, _scripting_, automasi task.
+- **Kelebihan**: Ringan, cepat, bisa di-chain dengan shell script, mendukung berbagai LLM backend.
+
+## GitHub Copilot CLI
+
+[GitHub Copilot CLI](https://docs.github.com/en/copilot) (`gh copilot`) adalah ekstensi GitHub CLI yang membawa AI assistance langsung ke terminal. Berguna untuk _explain_ command, _suggest_ perbaikan error, dan membantu navigasi CLI.
+
+- **Fokus Utama**: Asisten terminal, _command explanation_, _error fixing_.
+- **Kelebihan**: Integrasi native dengan GitHub ecosystem, zero setup jika sudah login `gh auth`.
+
+## Claude / ChatGPT
+
+Digunakan sebagai asisten generalis via web untuk _brainstorming_, perancangan arsitektur, dan memahami log _error_ yang panjang.
+
+- **Claude** (via [claude.ai](https://claude.ai)): Sangat baik dalam penulisan kode yang bersih, _nuanced reasoning_, dan analisis arsitektur.
+- **ChatGPT** (via [chatgpt.com](https://chatgpt.com)): Sangat baik untuk diskusi umum, analisis data, dan eksplorasi ide awal.

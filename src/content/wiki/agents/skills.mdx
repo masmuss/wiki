@@ -1,67 +1,159 @@
 ---
 title: "Agent Skills"
-description: "Daftar Agent Skills yang digunakan untuk menambah kapabilitas spesifik pada AI Agent."
+description: "Daftar 32 Agent Skills yang terpasang untuk menambah kapabilitas spesifik pada AI Agent (Zed & Antigravity)."
 createdAt: 2026-07-11
-updatedAt: 2026-07-11
-tags: ["ai", "agents", "skills", "mcp"]
+updatedAt: 2026-07-18
+tags: ["ai", "agents", "skills"]
 isPinned: false
 growthStage: "evergreen"
 ---
 
-**Agent Skills** adalah kumpulan instruksi, basis pengetahuan, dan seperangkat aturan yang dapat di-instal ke dalam AI Agent (seperti Antigravity) agar ia bertindak seolah-olah menjadi pakar (_expert_) dalam spesifikasi teknologi tertentu.
+**Agent Skills** adalah kumpulan instruksi, basis pengetahuan, dan seperangkat aturan yang di-install ke dalam AI Agent (seperti Zed Agent dan Antigravity) agar ia bertindak seolah-olah menjadi pakar (_expert_) dalam spesifikasi teknologi tertentu.
 
-Sumber utama dari ekosistem _skills_ ini didokumentasikan dan disediakan oleh [**skills.sh**](https://skills.sh/).
+Sumber utama ekosistem skills: [**skills.sh**](https://skills.sh/).
 
 ## Mengapa Menggunakan Skills?
 
-AI biasa sering kali hanya memiliki pengetahuan umum (atau _training data_ yang sudah kadaluarsa). Dengan _skills_, agent kita memiliki akses langsung ke **praktik terbaik (_best practices_) terbaru**, referensi dokumentasi terkini, dan gaya kode yang konsisten sesuai standar.
+AI biasa sering kali hanya memiliki pengetahuan umum (atau _training data_ yang sudah kadaluarsa). Dengan _skills_, agent memiliki akses langsung ke **praktik terbaik (_best practices_) terbaru**, referensi dokumentasi terkini, dan gaya kode yang konsisten sesuai standar.
 
-## Skills yang Sering Digunakan
+---
 
-### 1. Stack & Framework Utama
+## Semua Skills yang Terpasang
 
-- **[Caveman](https://www.skills.sh/juliusbrussee/caveman/caveman)**: Skill khusus untuk _stack_ yang kuat dan andal, sering dikaitkan dengan arsitektur simpel namun sangat efisien.
-- **[Golang](https://github.com/samber/cc-skills-golang)**: Memberikan pedoman standar idiom Go, manajemen _goroutine_, penulisan _unit test_, dan arsitektur _backend_ yang tangguh.
-- **[React](https://www.skills.sh/vercel-labs/agent-skills/vercel-react-best-practices)**: Praktik terbaik untuk React modern, pengelolaan _state_, implementasi _hooks_ kustom, dan optimasi _render_.
-- **[TypeScript Expert](https://www.skills.sh/sickn33/antigravity-awesome-skills/typescript-expert)**: Memandu agent dalam memanfaatkan sistem tipe (_type system_) tingkat lanjut, penggunaan _generics_, _utility types_, serta memastikan arsitektur _type-safe_ secara menyeluruh.
-- **[TypeScript Best Practices](https://www.skills.sh/0xbigboss/claude-code/typescript-best-practices)**: Memaksa agent untuk patuh pada prinsip _Clean Code_—tidak ada _magic numbers_, mengutamakan penamaan variabel yang deskriptif, dan memegang teguh prinsip satu fungsi untuk satu tanggung jawab.
+Total: **32 skills** di `~/.agents/skills/`.
 
-### 2. UI & Ekosistem Khusus
+### 1. Komunikasi & Workflow
 
-- **[Astro Expert](https://skills.sh/)**: Memberikan kemampuan untuk membuat komponen `.astro` dengan _islands architecture_, manipulasi _content collections_, dan konfigurasi SSR.
-- **[Shadcn UI](https://skills.sh/)**: Memberikan kapabilitas agar Agent bisa mengelola komponen _shadcn/ui_ (menambah, mengubah, dan menggunakan `components.json`) tanpa perlu diinstruksikan manual.
-- **[Svelte 5 Best Practices](https://skills.sh/)**: Mendidik agent tentang paradigma terbaru _Svelte 5 Runes_ (`$state`, `$derived`, `$effect`) dan pemindahan dari Svelte 4.
+| Skill           | Deskripsi                                                                                                                                                                                      |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Caveman**     | Mode komunikasi ultra-ringkas. Memotong token output ~65% tanpa mengurangi akurasi teknis. Level: lite, full, ultra, wenyan. Auto-trigger saat user minta "caveman mode" atau efisiensi token. |
+| **Find Skills** | Membantu menemukan dan meng-install agent skills dari ekosistem `skills.sh`. Menyediakan workflow: cek leaderboard, search via CLI (`npx skills find`), verifikasi kualitas, dan instalasi.    |
 
-### 3. Backend & Authentication
+### 2. Stack & Framework — Astro
 
-- **[Better Auth Best Practices](https://skills.sh/)**: Mencegah agent berhalusinasi soal konfigurasi autentikasi. Menambahkan basis pengetahuan tentang Better Auth untuk _setup_ sesi, kredensial, dan OAuth dalam TypeScript.
+| Skill                      | Deskripsi                                                                                                                                                                                                                                                   |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Astro**                  | Panduan lengkap framework Astro: project structure, CLI commands, komponen `.astro`, SSR adapter, deployment. Selalu konsultasi `docs.astro.build` untuk API terbaru.                                                                                       |
+| **Astro Expert**           | Keahlian mendalam: Content Collections dengan Zod schema, islands architecture, `client:load/idle/visible` hydration, `<Image>` dari `astro:assets`, anti-pattern detection. Menerapkan 5 _iron laws_ dan memory protocol.                                  |
+| **Astro Framework Agents** | Koleksi dari `delineas/astro-framework-agents`. Dua sub-skill: `astro-framework` (referensi komprehensif: islands, SSR, view transitions, i18n, server islands) dan `learning-astro` (tutorial interaktif 3 lesson ~45 menit untuk belajar Astro dari nol). |
 
-### 4. Workflow & Tools
+### 3. Stack & Framework — React / Next.js
 
-- **Boy Scout**: Prinsip _'selalu tinggalkan kode lebih bersih dari saat menemukannya'_. Skill ini otomatis akan memandu AI untuk merapikan _codebase_ (membuang kode tak terpakai, memperbaiki _lint_) saat sedang mengerjakan tugas lain.
-- **Modern Web Guidance**: Mewajibkan AI untuk menggunakan fitur web modern seputar aksesibilitas, HTML semantik, performa (_Core Web Vitals_), dan API _browser_ terkini ketimbang metode kuno.
+| Skill                               | Deskripsi                                                                                                                                                                                                                                                             |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vercel React Best Practices**     | 70 aturan performa React/Next.js dari Vercel Engineering dalam 8 kategori prioritas: eliminating waterfalls (CRITICAL), bundle size (CRITICAL), server-side (HIGH), client-side data fetching, re-render optimization, rendering, JavaScript perf, advanced patterns. |
+| **Next Cache Components Adoption**  | Memandu proses enable `cacheComponents: true` di Next.js 16.3+. Dua strategi: Incremental (codemod + loop per-route) dan Direct. Mencakup fixing 3 kelas blocker: request-time reads, sync-IO, "use cache" conflicts. Verifikasi via `next-dev-loop`.                 |
+| **Next Cache Components Optimizer** | Optimasi static shell setelah Cache Components aktif. Dua loop: Page-render (besarkan static shell) dan Nav (tampilkan layout tujuan saat navigasi). Menggunakan `agent-browser` + `/_next/mcp` untuk diagnosis dan verifikasi.                                       |
+| **Next Dev Loop**                   | Ritme edit/verify selama `next dev`. Cross-check dua view: `/_next/mcp` (framework-side: routes, errors, compilation) dan `agent-browser` (browser-side: DOM, console, React fiber). Butuh Next.js 16.3+ dengan Turbopack.                                            |
 
-## Model Context Protocol (MCP)
+### 4. Stack & Framework — Svelte
 
-Selain _Skills_ yang berbasis teks instruksional, AI Agents modern mengandalkan **MCP (Model Context Protocol)**. MCP adalah protokol standar terbuka yang digunakan untuk menghubungkan model AI secara langsung ke sumber data eksternal (seperti Github, Figma, Notion, atau database SQL) dan memungkinkannya menggunakan _tools_ lokal.
+| Skill                       | Deskripsi                                                                                                                                                                                                                                                                                           |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Svelte 5 Best Practices** | Panduan lengkap Svelte 5: runes (`$state`, `$derived`, `$effect`, `$props`, `$bindable`, `$inspect`), snippets (`{#snippet}`, `{@render}`), event handling (`onclick`), callback props (pengganti `createEventDispatcher`), SvelteKit patterns, migrasi dari Svelte 4, performa, TypeScript typing. |
 
-- **Kegunaan**: AI tidak perlu "menebak" atau sekadar mengandalkan hasil _copy-paste_ dari pengguna. Dengan MCP, agent dapat mengeksekusi perintah, membaca data _real-time_, dan memberikan aksi (seperti melakukan audit keamanan otomatis).
-- **Integrasi**: Biasanya di-load sebagai server (`mcp-server`) yang terhubung langsung ke IDE atau _CLI agent_.
+### 5. Stack & Framework — Go
 
-### MCP yang Sering Digunakan
+| Skill                     | Deskripsi                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Go (cc-skills-golang)** | 37 sub-skill produksi dari `samber/cc-skills-golang`: concurrency, error handling, testing (`stretchr/testify`), dependency injection (`uber-fx`, `uber-dig`), performance, security, observability, project layout, naming, code style, structs/interfaces, database, gRPC, GraphQL, CI, lint, popular libraries (`samber/lo`, `samber/do`, `samber/mo`), dan banyak lagi. |
 
-Beberapa MCP _server_ yang berjalan di lingkungan pengembangan saat ini:
+### 6. UI & Desain
 
-- **fallow**: Analisis kode statis, mendeteksi _dead code_, dependensi yang berantakan, serta memberikan metrik performa (_hot paths_, _cleanup candidates_).
-- **shadcn**: Mengakses komponen Shadcn UI langsung dari sumbernya untuk instalasi, pratinjau, dan integrasi yang lancar tanpa _copy-paste_ manual.
-- **astro-docs / next-devtools / svelte**: Memberikan kemampuan untuk membaca dokumentasi dan berinteraksi dengan instans aplikasi lokal (Next.js/Svelte/Astro) melalui CLI/Agent.
-- **chrome-devtools**: Memberikan agent kemampuan untuk mengontrol _browser_ (menavigasi halaman, mengambil _screenshot_, mengevaluasi _script_, hingga menganalisis metrik performa).
+| Skill                     | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **shadcn/ui**             | Manajemen komponen shadcn/ui untuk React: search, add, update, diff, preset. Menerapkan critical rules: `FieldGroup` + `Field` untuk form, `data-icon` untuk icon di Button, `gap-*` bukan `space-y-*`, semantic color tokens. Mendukung base `radix` dan `base`.                                                                                                                                                                  |
+| **shadcn-svelte**         | Manajemen komponen shadcn-svelte untuk Svelte: pola import `import * as Dialog` untuk multi-part, `import { Button }` untuk single-component. Rules paralel dengan shadcn/ui: Field, ToggleGroup, Card composition, toast via `svelte-sonner`.                                                                                                                                                                                     |
+| **Frontend Design**       | Pendekatan _design lead_ untuk menciptakan identitas visual yang distingtif. Mencakup: ground-the-design pada subjek, prinsip tipografi, struktur sebagai informasi, motion yang disengaja, brainstorming 2-pass, self-critique, dan penulisan copy dalam desain. Menghindari 3 template-look AI-generik.                                                                                                                          |
+| **Design Taste Frontend** | Skill anti-slop untuk landing page, portfolio, dan redesign. Membaca brief → menetapkan 3 dial (variance, motion, density) → memilih design system atau aesthetic → menghasilkan UI distingtif. Mencakup: pre-flight checklist 50+ item, block library pattern, AI-tells forbidden list (em-dash ban, no Inter default, no 3-equal-cards, no AI-purple), Liquid Glass approximation, dark mode protocol, GSAP canonical skeletons. |
+
+### 7. Kualitas Kode — Clean Code
+
+| Skill                     | Deskripsi                                                                                                                                                                                                                                                   |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Boy Scout**             | Filosofi: _"Always leave the campground cleaner than you found it."_ Setiap kali menyentuh kode, cari minimal 1 improvement kecil. Orchestrator: trigger `clean-names`, `clean-comments`, `clean-functions`, `clean-general`, `clean-tests` sesuai konteks. |
+| **Clean Code**            | Prinsip Clean Code oleh Robert C. Martin (Uncle Bob): meaningful names, small functions, good comments, formatting, error handling, unit tests (F.I.R.S.T.), class design (SRP), code smells & heuristics.                                                  |
+| **Clean Comments**        | Aturan C1-C5: tidak ada metadata di komen (pakai Git), hapus komen usang, tidak ada komen redundan, tulis komen dengan baik jika terpaksa, jangan commit kode yang dikomentari.                                                                             |
+| **Clean Functions**       | Aturan F1-F4: maksimal 3 argumen (pakai typed object), tidak ada output arguments (return value), tidak ada flag arguments (split function), hapus dead functions.                                                                                          |
+| **Clean General**         | Aturan G5-G36: DRY, no obscured intent, polymorphism over if/else, named constants (bukan magic numbers), functions do one thing, Law of Demeter (hindari train wrecks).                                                                                    |
+| **Clean Names**           | Aturan N1-N7: descriptive names, appropriate abstraction level, standard nomenclature, unambiguous, length matches scope, no encodings (hindari Hungarian notation, prefix `I`), names describe side effects.                                               |
+| **Clean Tests**           | Aturan T1-T9: test everything that could break, coverage tools, don't skip trivial tests, test boundary conditions, exhaustively test near bugs, tests must be fast (\<100ms), F.I.R.S.T principles, one concept per test.                                  |
+| **TypeScript Clean Code** | Katalog lengkap Clean Code untuk TypeScript: Comments (C1-C5), Functions (F1-F4), General (G1-G36), Names (N1-N7), Tests (T1-T9), plus aturan TypeScript-specific (TS1-TS3): explicit imports, enum/literal unions, no `any` di public API.                 |
+
+### 8. TypeScript
+
+| Skill              | Deskripsi                                                                                                                                                                                                                                                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **TypeScript Pro** | TypeScript tingkat lanjut: branded types, discriminated unions, type guards, custom utility types (`DeepReadonly`, `RequireExactlyOne`), conditional & mapped types, template literal types. Mencakup konfigurasi tsconfig ketat (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`) dan integrasi tRPC. |
+
+### 9. Backend & Authentication
+
+| Skill                                   | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Better Auth Security Best Practices** | Panduan keamanan Better Auth: secret management (min 32 char), rate limiting (default 100 req/10s, 3 req/10s untuk endpoint sensitif), CSRF protection (multi-layer), trusted origins (wildcard support), session security (expiry, cookie cache strategies: compact/JWT/JWE), OAuth token encryption (AES-256-GCM), IP tracking, database hooks untuk audit logging, account enumeration prevention. |
+
+### 10. Testing
+
+| Skill                       | Deskripsi                                                                                                                                                                                                                                        |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Test-Driven Development** | Iron law: **tidak ada kode produksi tanpa test gagal terlebih dahulu**. Siklus Red-Green-Refactor: tulis test → pastikan gagal → tulis kode minimal → pastikan pass → refactor. Dilengkapi daftar rationalization umum dan anti-pattern testing. |
+
+### 11. DevOps & CI/CD
+
+| Skill                        | Deskripsi                                                                                                                                                                                                                                                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **GitHub Actions Templates** | Template production-ready untuk GitHub Actions: test workflow (matrix build Node.js), build & push Docker image (ghcr.io), deploy ke Kubernetes (EKS), matrix build (multi-OS, multi-version), security scanning (Trivy, Snyk, CodeQL), reusable workflows, deployment dengan approval gates, notifikasi Slack. |
+| **Multi-Stage Dockerfile**   | Membantu membuat Dockerfile multi-stage yang efisien: builder stage terpisah dari runtime, base image minimal (Alpine/distroless), layer caching optimal, praktik keamanan (non-root user, hapus build tools), `.dockerignore`, dan `HEALTHCHECK`.                                                              |
+
+### 12. Analisis Kode
+
+| Skill      | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Fallow** | Codebase intelligence untuk TypeScript/JavaScript. Analisis statis: dead code (unused exports, files, types, dependencies), duplikasi, circular dependencies, complexity hotspots, architecture boundary violations, CSS token drift, feature flags, security candidates (tainted-sink, hardcoded-secret). 123 framework plugins, zero config, sub-second. CLI: `fallow dead-code`, `fallow audit`, `fallow health`, `fallow dupes`, `fallow security`, `fallow fix`. |
+
+### 13. Arsitektur
+
+| Skill                             | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Improve Codebase Architecture** | Menganalisis _architectural friction_ dan mengusulkan _deepening opportunities_: refactor yang mengubah modul dangkal menjadi dalam. Proses: Explore (scope hot spots via commit history), present candidates sebagai HTML report (Tailwind + Mermaid CDN) dengan before/after visualization, grilling loop untuk decision tree. Menggunakan kosakata desain: module, interface, depth, seam, adapter, locality. |
+
+### 14. Dokumentasi
+
+| Skill             | Deskripsi                                                                                                                                                                                                       |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Create README** | Membuat README.md komprehensif dan well-structured. Mengacu pada template dari Azure Samples dan open source projects. Menggunakan GFM (GitHub Flavored Markdown), GitHub admonition syntax, dan minimal emoji. |
+
+### 15. Diagram & Visualisasi
+
+| Skill                            | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Excalidraw Diagram Generator** | Generate diagram Excalidraw dari deskripsi bahasa alami. Dukungan 9 tipe diagram: flowchart, relationship diagram, mind map, architecture diagram, data flow diagram (DFD), business flow (swimlane), class diagram, sequence diagram, ER diagram. Output `.excalidraw` JSON yang bisa dibuka langsung di excalidraw.com. Fitur opsional: integrasi icon library (AWS/GCP via Python scripts `add-icon-to-diagram.py` + `add-arrow.py`). |
+
+---
 
 ## Cara Instalasi Skills
 
-Melalui Antigravity (AGY), Anda cukup memberitahu AI untuk mencari dan meng-install _skill_ baru:
+Melalui terminal dengan `npx skills`:
 
 ```bash
-# Contoh perintah kepada agent
-"Tolong instal skill shadcn dan svelte5-best-practices dari skills.sh"
+# Cari skill
+npx skills find "react performance"
+
+# Install skill spesifik
+npx skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
+
+# Install semua skill dari satu repo
+npx skills add https://github.com/samber/cc-skills-golang --all -g -y
+
+# Cek update
+npx skills check
+
+# Update semua
+npx skills update
+```
+
+Atau minta langsung ke Agent (Zed/AGY):
+
+```
+"Tolong install skill shadcn dan svelte5-best-practices dari skills.sh"
 ```
