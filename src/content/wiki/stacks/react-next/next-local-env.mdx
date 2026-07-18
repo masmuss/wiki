@@ -1,0 +1,446 @@
+---
+title: "Next.js Local Environment Setup"
+description: "Setup environment development Next.js: Bun/npm, ESLint, Lefthook, Drizzle/Prisma, Better Auth, Playwright, shadcn/ui."
+createdAt: 2026-07-18
+updatedAt: 2026-07-18
+tags: ["react", "nextjs", "devtools", "setup"]
+isPinned: false
+growthStage: "seedling"
+---
+
+import FileTree from "@/components/wiki/FileTree.astro";
+
+## Ringkasan
+
+Setup ini diambil dari dua project Next.js production:
+
+- **soalku** — platform ujian online dengan multi-role (superadmin, school, student), Drizzle ORM + Better Auth
+- **edusense** — dashboard analitik pendidikan dengan Prisma + Better Auth + recharts
+
+Keduanya menggunakan **Next.js App Router**, **TypeScript strict**, **shadcn/ui**, **Tailwind v4**, dan **Better Auth**.
+
+---
+
+## Tools yang Dipakai
+
+| Tool                                                                            | Fungsi                            | Instalasi                                |
+| ------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------------- |
+| **[Bun](https://bun.sh/)**                                                      | Runtime + package manager (utama) | `brew install bun`                       |
+| **[ESLint](https://eslint.org/)**                                               | Linting (flat config)             | `bun add -D eslint`                      |
+| **[Prettier](https://prettier.io/)**                                            | Code formatting                   | `bun add -D prettier`                    |
+| **[Lefthook](https://github.com/evilmartians/lefthook)**                        | Git hooks manager                 | `brew install lefthook`                  |
+| **[Playwright](https://playwright.dev/)**                                       | E2E testing                       | `bun add -D @playwright/test`            |
+| **[shadcn/ui](https://ui.shadcn.com/)**                                         | Component library (copy-paste)    | `bunx shadcn@latest init`                |
+| **[Better Auth](https://www.better-auth.com/)**                                 | Authentication (type-safe)        | `bun add better-auth`                    |
+| **[Drizzle](https://orm.drizzle.team/)** / **[Prisma](https://www.prisma.io/)** | ORM                               | `bun add drizzle-orm` / `bun add prisma` |
+| **[Docker](https://www.docker.com/)**                                           | Container runtime                 | `brew install --cask docker`             |
+
+---
+
+## 1. Package Manager & Scripts
+
+Dua project sama-sama bisa pakai **Bun**. Script dari soalku:
+
+```json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "format": "prettier --write --ignore-unknown .",
+    "format:check": "prettier --check --ignore-unknown .",
+    "commitlint": "commitlint --edit",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "bun scripts/seed.ts",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "preinstall": "npx only-allow bun"
+  }
+}
+```
+
+### Perintah Sehari-hari
+
+```bash
+bun dev          # Dev server (port 3000)
+bun build        # Production build
+bun lint         # ESLint
+bun format       # Prettier
+bun test         # Playwright E2E
+bun db:generate  # Generate Drizzle migration
+bun db:push      # Push schema ke database
+bun db:studio    # Drizzle Studio (GUI)
+```
+
+---
+
+## 2. ESLint + Prettier
+
+### ESLint Flat Config
+
+```js
+// eslint.config.mjs
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+import { defineConfig, globalIgnores } from "eslint/config";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  {
+    rules: {
+      "react/no-children-prop": "off",
+    },
+  },
+]);
+
+export default eslintConfig;
+```
+
+### Prettier
+
+```json
+// .prettierrc
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "all"
+}
+```
+
+---
+
+## 3. TypeScript Config
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+```
+
+---
+
+## 4. Lefthook (Git Hooks)
+
+```yaml
+# lefthook.yml
+pre-commit:
+  commands:
+    prettier:
+      glob: "*.{js,mjs,cjs,ts,tsx,mts,cts,json,md,css,yml,yaml}"
+      run: bun run format {staged_files}
+      stage_fixed: true
+    eslint:
+      glob: "*.{js,mjs,cjs,ts,tsx,mts,cts}"
+      run: npx eslint --fix {staged_files}
+      stage_fixed: true
+    typecheck:
+      glob: "*.{ts,tsx,mts,cts}"
+      run: npx tsc --noEmit
+
+commit-msg:
+  commands:
+    commitlint:
+      run: npx commitlint --edit {1}
+```
+
+Install:
+
+```bash
+lefthook install
+```
+
+---
+
+## 5. Database
+
+### Opsi A: Drizzle ORM (soalku)
+
+```ts
+// drizzle.config.ts
+import type { Config } from "drizzle-kit";
+
+export default {
+  schema: "./core/db/schema.ts",
+  out: "./core/db/migrations",
+  dialect: "postgresql",
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+} satisfies Config;
+```
+
+### Opsi B: Prisma (edusense)
+
+```prisma
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"  // atau "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+### Docker Compose (PostgreSQL)
+
+```yaml
+# compose.yml
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: myapp
+      POSTGRES_PASSWORD: myapp
+      POSTGRES_DB: myapp
+    volumes:
+      - pgdata:/var/lib/postgresql
+
+volumes:
+  pgdata:
+```
+
+---
+
+## 6. Authentication (Better Auth)
+
+Better Auth digunakan di kedua project. Setup minimal:
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "@/core/db";
+
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "pg", // atau 'mysql'
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+  },
+});
+```
+
+Generate schema:
+
+```bash
+bun db:auth-generate
+# better-auth generate --output lib/db/auth-schema.ts --config lib/auth.ts
+```
+
+---
+
+## 7. shadcn/ui Setup
+
+```bash
+# Init (sekali)
+bunx shadcn@latest init
+
+# Add components
+bunx shadcn@latest add button card dialog dropdown-menu form input select table tabs
+
+# Search
+bunx shadcn@latest search @shadcn -q "sidebar"
+```
+
+Struktur komponen:
+
+<FileTree>
+
+- components/
+  - ui/ <span class="text-muted-foreground ml-2 text-xs font-sans"># shadcn/ui primitives</span>
+    - button.tsx
+    - card.tsx
+    - dialog.tsx
+    - form.tsx
+    - input.tsx
+    - ...
+  - shared/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared components (header, footer, sidebar)</span>
+  - data-table/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Data table components</span>
+
+</FileTree>
+
+---
+
+## 8. Testing (Playwright)
+
+```ts
+// playwright.config.ts
+import { defineConfig, devices } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./tests",
+  fullyParallel: false,
+  retries: 1,
+  workers: 1,
+  reporter: "list",
+  use: {
+    baseURL: "http://localhost:3000",
+    trace: "on-first-retry",
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
+  webServer: {
+    command: "bun run dev",
+    url: "http://localhost:3000",
+    reuseExistingServer: !process.env.CI,
+    timeout: 30000,
+  },
+});
+```
+
+---
+
+## 9. Project Structure
+
+<FileTree>
+
+- project/
+  - app/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Next.js App Router</span>
+    - (auth)/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Route group: login, register</span>
+    - (superadmin)/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Route group: dashboard admin</span>
+    - api/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Route handlers</span>
+    - layout.tsx
+    - page.tsx
+  - components/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Reusable UI components</span>
+    - ui/ <span class="text-muted-foreground ml-2 text-xs font-sans"># shadcn/ui</span>
+    - shared/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Header, footer, sidebar</span>
+  - core/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Business logic (soalku pattern)</span>
+    - db/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Drizzle schema + migrations</span>
+  - lib/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Utils, auth config, validators</span>
+  - hooks/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Custom hooks</span>
+  - modules/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Feature modules</span>
+  - config/ <span class="text-muted-foreground ml-2 text-xs font-sans"># App config constants</span>
+  - tests/ <span class="text-muted-foreground ml-2 text-xs font-sans"># E2E tests</span>
+  - public/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Static assets</span>
+  - next.config.ts
+  - drizzle.config.ts
+  - lefthook.yml
+  - eslint.config.mjs
+  - tsconfig.json
+  - compose.yml
+
+</FileTree>
+
+---
+
+## 10. Middleware (Auth Guard)
+
+```ts
+// middleware.ts (root project)
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get("token");
+
+  if (!token && request.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/dashboard/:path*"],
+};
+```
+
+---
+
+## Quick Start (Proyek Baru)
+
+```bash
+# 1. Create project
+bun create next-app@latest my-app
+cd my-app
+
+# 2. Install core dependencies
+bun add better-auth drizzle-orm
+bun add -D drizzle-kit @playwright/test lefthook
+
+# 3. Init shadcn/ui
+bunx shadcn@latest init
+bunx shadcn@latest add button card dialog form input table
+
+# 4. Setup docker
+# Copy compose.yml dari atas → sesuaikan env
+
+# 5. Setup git hooks
+lefthook install
+
+# 6. Generate auth schema
+bun db:auth-generate
+
+# 7. Start dev
+docker compose up -d
+bun dev
+```
+
+---
+
+## Perbandingan Dua Project
+
+| Aspek               | soalku                       | edusense                           |
+| ------------------- | ---------------------------- | ---------------------------------- |
+| **Package manager** | Bun                          | npm                                |
+| **ORM**             | Drizzle                      | Prisma                             |
+| **DB**              | PostgreSQL                   | MariaDB                            |
+| **Auth**            | Better Auth (email + social) | Better Auth                        |
+| **UI**              | shadcn/ui + Tailwind v4      | shadcn/ui + Tailwind v4 + radix-ui |
+| **Testing**         | Playwright                   | N/A                                |
+| **Linting**         | ESLint flat config           | ESLint flat config                 |
+| **Git hooks**       | Lefthook + commitlint        | N/A                                |
+| **Next.js**         | 15.x                         | 16.x                               |
+| **Charts**          | N/A                          | recharts                           |
+| **Forms**           | shadcn/ui form               | react-hook-form + zod              |
+
+---
