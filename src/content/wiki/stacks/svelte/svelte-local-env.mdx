@@ -1,0 +1,401 @@
+---
+title: "SvelteKit Local Environment Setup"
+description: "Setup environment development SvelteKit monorepo: Turborepo, pnpm, Svelte 5 runes, shadcn-svelte, Drizzle, Better Auth, Vitest, Playwright."
+createdAt: 2026-07-18
+updatedAt: 2026-07-18
+tags: ["svelte", "sveltekit", "devtools", "setup", "monorepo"]
+isPinned: false
+growthStage: "seedling"
+---
+
+import FileTree from "@/components/wiki/FileTree.astro";
+
+## Ringkasan
+
+Setup ini diambil dari **[masmuss/trak](https://github.com/masmuss/trak)** — aplikasi tracker full-stack dengan arsitektur **monorepo Turborepo**.
+
+Stack: **Svelte 5 (runes)** + **SvelteKit** + **shadcn-svelte** + **bits-ui** + **Tailwind v4** + **Drizzle ORM** + **Better Auth** + **PostgreSQL**.
+
+---
+
+## Tools yang Dipakai
+
+| Tool                                                     | Fungsi                     | Instalasi                            |
+| -------------------------------------------------------- | -------------------------- | ------------------------------------ |
+| **[pnpm](https://pnpm.io/)**                             | Package manager (monorepo) | `brew install pnpm`                  |
+| **[Turborepo](https://turbo.build/)**                    | Monorepo orchestration     | `pnpm add -D turbo`                  |
+| **[SvelteKit](https://kit.svelte.dev/)**                 | Full-stack framework       | `pnpm create svelte@latest`          |
+| **[shadcn-svelte](https://shadcn-svelte.com/)**          | Component library          | `pnpm dlx shadcn-svelte@latest init` |
+| **[bits-ui](https://bits-ui.com/)**                      | Headless UI primitives     | `pnpm add -D bits-ui`                |
+| **[Drizzle](https://orm.drizzle.team/)**                 | ORM (shared package)       | `pnpm add drizzle-orm`               |
+| **[Better Auth](https://www.better-auth.com/)**          | Authentication             | `pnpm add better-auth`               |
+| **[Vitest](https://vitest.dev/)**                        | Unit testing               | `pnpm add -D vitest`                 |
+| **[Playwright](https://playwright.dev/)**                | E2E testing                | `pnpm add -D @playwright/test`       |
+| **[Lefthook](https://github.com/evilmartians/lefthook)** | Git hooks                  | `brew install lefthook`              |
+
+---
+
+## 1. Monorepo Structure (Turborepo + pnpm)
+
+```yaml
+# pnpm-workspace.yaml
+packages:
+  - "apps/*"
+  - "packages/*"
+```
+
+```json
+// turbo.json
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".svelte-kit/**", ".vercel/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {},
+    "check": {}
+  }
+}
+```
+
+```json
+// package.json (root)
+{
+  "name": "trak",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "preview": "pnpm --filter @trak/web preview",
+    "check": "turbo check",
+    "lint": "turbo lint",
+    "format": "prettier --write .",
+    "test:unit": "pnpm --filter @trak/web test:unit",
+    "test": "pnpm --filter @trak/web test",
+    "test:e2e": "pnpm --filter @trak/web test:e2e",
+    "db:push": "pnpm --filter @trak/database db:push",
+    "db:generate": "pnpm --filter @trak/database db:generate",
+    "db:migrate": "pnpm --filter @trak/database db:migrate",
+    "db:studio": "pnpm --filter @trak/database db:studio",
+    "db:seed": "pnpm --filter @trak/web db:seed"
+  }
+}
+```
+
+### Perintah Sehari-hari
+
+```bash
+pnpm dev           # Semua app via Turbo
+pnpm build         # Build semua
+pnpm lint          # Lint semua
+pnpm db:push       # Push schema Drizzle ke DB
+pnpm db:studio     # Drizzle Studio
+pnpm test          # Unit + E2E
+```
+
+---
+
+## 2. SvelteKit Config
+
+```ts
+// apps/web/svelte.config.ts
+import adapter from "@sveltejs/adapter-auto";
+
+const config = {
+  compilerOptions: {
+    // Force Svelte 5 runes mode
+    runes: ({ filename }) =>
+      filename.split(/[/\\]/).includes("node_modules") ? undefined : true,
+  },
+  kit: {
+    adapter: adapter(),
+  },
+};
+
+export default config;
+```
+
+---
+
+## 3. Vite Config
+
+```ts
+// apps/web/vite.config.ts
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vitest/config";
+import { sveltekit } from "@sveltejs/kit/vite";
+import { config } from "dotenv";
+import path from "path";
+
+// Load .env from monorepo root
+config({ path: path.resolve(__dirname, "../../.env") });
+
+export default defineConfig({
+  plugins: [tailwindcss(), sveltekit()],
+  test: {
+    include: ["src/**/*.{test,spec}.{js,ts}"],
+    exclude: ["src/lib/server/**"],
+  },
+});
+```
+
+---
+
+## 4. shadcn-svelte + bits-ui
+
+### Init
+
+```bash
+cd apps/web
+pnpm dlx shadcn-svelte@latest init
+pnpm dlx shadcn-svelte@latest add button card dialog form input table select
+```
+
+### Struktur Komponen
+
+```svelte
+<script lang="ts">
+  import * as Card from '$lib/components/ui/card';
+  import { Button } from '$lib/components/ui/button';
+  import { Separator } from '$lib/components/ui/separator';
+</script>
+
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Title</Card.Title>
+    <Card.Description>Description</Card.Description>
+  </Card.Header>
+  <Card.Content>Content here</Card.Content>
+  <Card.Footer>
+    <Button>Action</Button>
+  </Card.Footer>
+</Card.Root>
+```
+
+### Library Tambahan
+
+| Library                             | Fungsi                                         |
+| ----------------------------------- | ---------------------------------------------- |
+| `formsnap` + `sveltekit-superforms` | Form handling + validasi Zod                   |
+| `bits-ui`                           | Headless UI primitives (dipakai shadcn-svelte) |
+| `phosphor-svelte`                   | Icon library                                   |
+| `mode-watcher`                      | Dark/light mode toggle                         |
+| `svelte-sonner`                     | Toast notifications                            |
+| `layerchart`                        | Charts & visualisasi                           |
+| `tailwind-variants`                 | Component variant API                          |
+| `tw-animate-css`                    | Animasi Tailwind                               |
+
+---
+
+## 5. Database (Shared Package)
+
+```json
+// packages/database/package.json
+{
+  "name": "@trak/database",
+  "scripts": {
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
+  }
+}
+```
+
+Schema Drizzle di-share antar app via `@trak/database`. App web import dari package:
+
+```ts
+// apps/web/src/lib/server/db.ts
+import { db } from "@trak/database";
+```
+
+---
+
+## 6. Authentication (Better Auth)
+
+```ts
+// apps/web/src/lib/server/auth.ts
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "@trak/database";
+
+export const auth = betterAuth({
+  database: drizzleAdapter(db, { provider: "pg" }),
+  emailAndPassword: { enabled: true },
+});
+
+// Client-side helper
+// apps/web/src/lib/auth-client.ts
+import { createAuthClient } from "better-auth/client";
+export const authClient = createAuthClient();
+```
+
+---
+
+## 7. ESLint + Prettier
+
+### Root ESLint
+
+```js
+// eslint.config.js (root)
+import js from "@eslint/js";
+import path from "node:path";
+import { includeIgnoreFile } from "@eslint/compat";
+import { defineConfig } from "eslint/config";
+import globals from "globals";
+
+export default defineConfig(
+  includeIgnoreFile(path.resolve(import.meta.dirname, ".gitignore")),
+  js.configs.recommended,
+  {
+    languageOptions: { globals: { ...globals.node } },
+  },
+);
+```
+
+App web punya ESLint sendiri dengan `eslint-plugin-svelte`.
+
+---
+
+## 8. Lefthook (Git Hooks)
+
+```yaml
+# lefthook.yml
+pre-commit:
+  parallel: true
+  commands:
+    svelte-check:
+      glob: "*.{svelte,ts,js}"
+      run: pnpm --filter @trak/web run check
+    prettier:
+      glob: "*.{js,ts,svelte,json,css,md}"
+      run: pnpm prettier --write {staged_files}
+      stage_fixed: true
+```
+
+---
+
+## 9. Testing
+
+### Unit (Vitest)
+
+```ts
+// apps/web/vite.config.ts (sudah include)
+test: {
+  include: ['src/**/*.{test,spec}.{js,ts}'],
+  exclude: ['src/lib/server/**'],
+}
+```
+
+Jalankan: `pnpm test:unit`
+
+### E2E (Playwright)
+
+```bash
+pnpm test:e2e
+# playwright install && playwright test
+```
+
+---
+
+## 10. Docker Compose
+
+```yaml
+# compose.yaml
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: local
+    volumes:
+      - pgdata:/var/lib/postgresql
+volumes:
+  pgdata:
+```
+
+---
+
+## 11. Monorepo File Tree
+
+<FileTree>
+
+- trak/
+  - apps/
+    - web/ <span class="text-muted-foreground ml-2 text-xs font-sans"># SvelteKit frontend</span>
+      - src/
+        - lib/
+          - components/ui/ <span class="text-muted-foreground ml-2 text-xs font-sans"># shadcn-svelte</span>
+          - features/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Feature modules</span>
+          - server/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Auth, db helpers</span>
+          - auth-client.ts
+        - routes/ <span class="text-muted-foreground ml-2 text-xs font-sans"># SvelteKit routing</span>
+        - hooks.server.ts
+        - app.html
+      - svelte.config.ts
+      - vite.config.ts
+    - bot/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Bot app</span>
+  - packages/
+    - database/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Drizzle schema + config</span>
+    - services/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared business logic</span>
+    - shared/ <span class="text-muted-foreground ml-2 text-xs font-sans"># Shared types, utils</span>
+  - pnpm-workspace.yaml
+  - turbo.json
+  - compose.yaml
+  - lefthook.yml
+  - eslint.config.js
+
+</FileTree>
+
+---
+
+## Quick Start (Proyek Baru)
+
+```bash
+# 1. Create SvelteKit app
+pnpm create svelte@latest my-app
+cd my-app
+
+# 2. Init monorepo (opsional)
+pnpm add -D turbo
+# Setup pnpm-workspace.yaml + turbo.json
+
+# 3. Add core deps
+pnpm add -D @sveltejs/adapter-auto @tailwindcss/vite tailwindcss
+pnpm add -D bits-ui formsnap sveltekit-superforms zod
+
+# 4. Init shadcn-svelte
+pnpm dlx shadcn-svelte@latest init
+pnpm dlx shadcn-svelte@latest add button card dialog form input
+
+# 5. Add auth
+pnpm add better-auth
+pnpm add -D @better-auth/cli
+
+# 6. Add database
+pnpm add drizzle-orm postgres
+pnpm add -D drizzle-kit
+
+# 7. Setup git hooks
+pnpm add -D lefthook
+pnpm lefthook install
+
+# 8. Start infrastructure
+docker compose up -d
+
+# 9. Start dev
+pnpm dev
+```
+
+---
+
+_Referensi: [masmuss/trak](https://github.com/masmuss/trak)_
