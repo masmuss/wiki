@@ -1,5 +1,6 @@
 // @ts-check
 import { unified } from "@astrojs/markdown-remark";
+import mdx from "@astrojs/mdx";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import { fileURLToPath } from "url";
@@ -12,8 +13,10 @@ import wikiLink from "remark-wiki-link";
 import { wikiLinkOptions } from "./src/lib/wiki/wiki-link-resolver.mjs";
 import { remarkCustomSyntax } from "./src/lib/wiki/remark-custom-syntax.mjs";
 import { remarkAlert } from "remark-github-blockquote-alert";
-import remarkDeflist from "remark-deflist";
-import mdx from "@astrojs/mdx";
+import { remarkDefinitionList } from "remark-definition-list";
+
+import sitemap from "@astrojs/sitemap";
+
 // bejamas:astro-fonts:start
 /** @type {any} */
 const BEJAMAS_ASTRO_FONTS = [
@@ -51,13 +54,13 @@ export default defineConfig({
       },
     },
   },
-  integrations: [pagefind(), mdx()],
+  integrations: [pagefind(), mdx(), sitemap()],
   markdown: {
     processor: unified({
       remarkPlugins: [
         remarkMath,
         [wikiLink, wikiLinkOptions],
-        remarkDeflist,
+        remarkDefinitionList,
         remarkCustomSyntax,
         remarkAlert,
       ],
