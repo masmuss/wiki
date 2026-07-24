@@ -3,7 +3,7 @@ export const SITE = {
 	title: "Veka",
 	description: "Minimalist Digital Garden",
 	author: "Veka",
-	url: "https://demo-veka.khoirul.me",
+	url: "https://wiki.khoirul.me",
 	image: "/og-image.png",
 	favicon: "/favicon.svg",
 };
